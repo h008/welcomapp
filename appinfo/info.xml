@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>welcomapp</id>
+    <name>Welcom App</name>
+    <summary>welcome page</summary>
+    <description><![CDATA[welcome page]]></description>
+    <version>0.0.1</version>
+    <licence>agpl</licence>
+    <author mail="info@rockedcube.com" >RockedcubeJPN</author>
+    <namespace>WelcomApp</namespace>
+    <category>tools</category>
+    <bugs>https://rockedcube.com</bugs>
+    <dependencies>
+        <nextcloud min-version="15" max-version="15"/>
+    </dependencies>
+    <navigations>
+        <navigation>
+            <name>Welcom App</name>
+            <route>welcomapp.page.index</route>
+        </navigation>
+    </navigations>
+</info>

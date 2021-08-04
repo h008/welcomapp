@@ -1,0 +1,15 @@
+{
+    "name": "Welcom App",
+    "description": "welcome page",
+    "type": "project",
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "RockedcubeJPN"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}
