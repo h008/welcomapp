@@ -1,0 +1,386 @@
+<template>
+	<div id="content" class="app-welcomapp">
+		<AppNavigation>
+			<AppNavigationItem
+				v-if="!loading"
+				title="新着順"
+				:icon="menuIcon(0)"
+				@click="changeCategory(0)" />
+			<span v-if="!loading && categories">
+				<AppNavigationItem
+					v-for="category of categories"
+					:key="`ct_${category.id}`"
+					:title="category.category_name"
+					:icon="menuIcon(category.id)"
+					@click="changeCategory(category.id)" />
+			</span>
+			<AppNavigationItem
+				v-if="!loading && canAnnounce"
+				title="下書き"
+				:icon="menuIcon(-1)"
+				@click="showDraft()" />
+
+			<AppNavigationNew
+				v-if="!loading && canAnnounce"
+				:text="t('welcomapp', '新規アナウンス')"
+				:disabled="false"
+				button-id="new-welcomapp-button"
+				button-class="icon-add"
+				@click="newNote" />
+			<AppNavigationItem
+				v-if="!loading && canAnnounce"
+				title="カテゴリーの設定"
+				:text="t('welcomapp', 'カテゴリーの設定')"
+				:disabled="false"
+				button-id="categories-welcomapp-button"
+				button-class="icon-add"
+				@click="changeMode('categorySetting')" />
+			<AppNavigationItem
+				v-if="!loading && canAnnounce"
+				title="タグの設定"
+				:text="t('welcomapp', 'タグの設定')"
+				:disabled="false"
+				button-id="tags-welcomapp-button"
+				button-class="icon-add"
+				@click="changeMode('tagSetting')" />
+		</AppNavigation>
+		<AppContent v-if="user && user.id">
+			<div v-if="mode=='notes'">
+				<Container :notes.sync="notes"
+					class=""
+					:current-note.sync="currentNote"
+					:categories="categories"
+					:tags="tags"
+					:user="user"
+					:users="users"
+					:mode.sync="containerMode"
+					:filter.sync="filter" />
+			</div>
+			<div v-if="mode=='categorySetting'">
+				<CategorySetting :categories.sync="categories" />
+			</div>
+			<div v-if="mode=='tagSetting'">
+				<TagSetting :tags.sync="tags" />
+			</div>
+
+			<div v-if="!notes" id="emptycontent">
+				<div class="icon-file" />
+				<h2>{{ t("welcomapp", "表示するアイテムはありません。") }}</h2>
+			</div>
+		</AppContent>
+	</div>
+</template>
+
+<script>
+import AppContent from '@nextcloud/vue/dist/Components/AppContent'
+import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation'
+import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem'
+import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
+
+// import '@nextcloud/dialogs/styles/toast.scss'
+import { generateUrl } from '@nextcloud/router'
+import { showError, showSuccess } from '@nextcloud/dialogs'
+import axios from '@nextcloud/axios'
+import { v4 as uuidv4 } from 'uuid'
+
+import Container from './components/Container.vue'
+import CategorySetting from './components/CategorySetting.vue'
+import TagSetting from './components/TagSetting.vue'
+import Mymodules from './js/modules'
+
+export default {
+	name: 'App',
+	components: {
+		AppContent,
+		AppNavigation,
+		AppNavigationItem,
+		AppNavigationNew,
+		Container,
+		CategorySetting,
+		TagSetting,
+	},
+	data() {
+		return {
+			notes: [],
+			currentNoteId: null,
+			updating: false,
+			loading: true,
+			content: '',
+			currentNote: {},
+			mode: 'notes',
+			categories: [],
+			selectedCategory: 0,
+			tags: [],
+			user: {},
+			containerMode: 'list',
+			users: [],
+			testData: null,
+			filter: { category: 0, pubFlag: true, pinFlag: false, offset: 0, limit: 0 },
+		}
+	},
+	computed: {
+		/**
+		 * Return the currently selected note object
+		 *
+		 * @return {object | null}
+		 */
+
+		/**
+		 * Returns true if a note is selected and its title is not empty
+		 *
+		 * @return {boolean}
+		 */
+		savePossible() {
+			return this.currentNote && this.currentNote.title !== ''
+		},
+		canAnnounce() {
+			if (!this.user || !this.user.groups) { return false }
+			return this.user.groups.includes('announce')
+		},
+
+	},
+	watch: {
+
+	},
+	/**
+	 * Fetch list of notes when the component is loaded
+	 */
+	async created() {
+		// this.fetchNotes()
+		this.fetchUserData()
+		this.fetchCategories()
+		this.fetchTags()
+		axios.get(generateUrl('/apps/welcomapp/getusers')).then((result) => {
+			this.users = result.data
+		})
+		this.loading = false
+
+	},
+	methods: {
+		menuIcon(categoryId) {
+			if (categoryId === this.selectedCategory) {
+				return 'icon-triangle-e'
+			} else {
+				return ''
+			}
+
+		},
+		async fetchNotes() {
+			await axios.get(generateUrl('/apps/welcomapp/notes')).then((result) => {
+				this.notes = result.data
+			}).catch((e) => {
+				console.error(e)
+				showError(t('welcomapp', 'Could not fetch notes'))
+				this.notes = []
+			})
+		},
+		async fetchUserData() {
+
+			axios.get(generateUrl('/apps/welcomapp/users')).then((result) => {
+				this.user = result.data
+				if (this.user.id) {
+
+					if (this.user.groups.includes('announce')) {
+						console.info(this.user)
+						Mymodules.fetchDirInfoOrCreate(`${this.user.id}/announce`).then(() => {
+							const data = { path: 'announce', shareType: 1, shareWith: 'all_users', publicUpload: 'false', permissions: 1 }
+							return axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result2) => {
+								const shareId = result2?.data?.ocs?.data?.id
+								if (shareId) {
+									this.$set(this.user, 'shareId', shareId)
+								}
+		 })
+
+		 })
+					}
+				}
+			}).catch((e) => console.error(e))
+		},
+		async fetchCategories() {
+			try {
+				const response = await axios.get(generateUrl('/apps/welcomapp/categories'))
+				this.categories = response.data
+			} catch (e) {
+				console.error(e)
+				showError(t('welcomeapp', 'Could not fetch categories'))
+
+			}
+
+		},
+		async fetchTags() {
+			try {
+				const response = await axios.get(generateUrl('/apps/welcomapp/tags'))
+				this.tags = response.data
+			} catch (e) {
+				showError(t('welcomapp', 'Could not fetch tags'))
+			}
+		},
+		/**
+		 * Create a new note and focus the note content field automatically
+		 *
+		 * @param {number} noteId Number
+		 */
+		openNote(noteId) {
+			if (this.updating) {
+				return
+			}
+			this.currentNoteId = noteId
+			const tmpData = this.notes.find((note) => note.id === noteId)
+			this.currentNote = Object.assign({}, tmpData)
+
+			this.content = this.currentNote.content
+		},
+		/**
+		 * Action tiggered when clicking the save button
+		 * create a new note or save
+		 */
+		saveNote() {
+			if (this.currentNote.id === -1) {
+				this.createNote(this.currentNote)
+			} else {
+				this.updateNote(this.currentNote)
+			}
+		},
+		/**
+		 * Create a new note and focus the note content field automatically
+		 * The note is not yet saved, therefore an id of -1 is used until it
+		 * has been persisted in the backend
+		 */
+		newNote() {
+			if (this.mode !== 'notes') {
+				this.mode = 'notes'
+				this.currentNote = { id: -2 }
+				this.notes = this.notes.filter((note) => note.id !== -1)
+			}
+			if (this.currentNote.id !== -1) {
+				const blankNote = {
+					id: -1,
+					title: '新規アナウンス',
+					categories: 0,
+					content: '',
+					pinFlag: false,
+					pubFlag: false,
+
+					uuid: uuidv4(),
+					shareId: this.user.shareId,
+				}
+				this.currentNoteId = -1
+				this.$nextTick(() => {
+					this.notes.push(blankNote)
+					this.currentNote = blankNote
+					this.content = ''
+
+				})
+
+			}
+		},
+		/**
+		 * Abort creating a new note
+		 */
+		cancelNewNote() {
+			this.notes.splice(
+				this.notes.findIndex((note) => note.id === -1),
+				1
+			)
+			this.currentNoteId = null
+			this.currentNote = null
+			this.content = null
+		},
+		/**
+		 * Create a new note by sending the information to the server
+		 *
+		 * @param {object} note Note object
+		 */
+		async createNote(note) {
+			this.updating = true
+			try {
+				const response = await axios.post(
+					generateUrl('/apps/welcomapp/notes'),
+					note
+				)
+				const index = this.notes.findIndex(
+					(match) => match.id === this.currentNoteId
+				)
+				this.$set(this.notes, index, response.data)
+				this.currentNoteId = response.data.id
+			} catch (e) {
+				console.error(e)
+				showError(t('welcomapp', 'Could not create the note'))
+			}
+			this.updating = false
+		},
+		/**
+		 * Update an existing note on the server
+		 *
+		 * @param {object} note Note object
+		 */
+		async updateNote(note) {
+			this.updating = true
+			try {
+				await axios.put(generateUrl(`/apps/welcomapp/notes/${note.id}`), note)
+			} catch (e) {
+				console.error(e)
+				showError(t('welcomapp', 'Could not update the note'))
+			}
+			this.updating = false
+		},
+		/**
+		 * Delete a note, remove it from the frontend and show a hint
+		 *
+		 * @param {object} note Note object
+		 */
+		async deleteNote(note) {
+			try {
+				await axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
+				this.notes.splice(this.notes.indexOf(note), 1)
+				if (this.currentNoteId === note.id) {
+					this.currentNoteId = null
+					this.currentNote = null
+					this.content = null
+				}
+				showSuccess(t('welcomapp', 'Note deleted'))
+			} catch (e) {
+				console.error(e)
+				showError(t('welcomapp', 'Could not delete the note'))
+			}
+		},
+		changeMode(mode) {
+			if (mode === 'notes') {
+				this.containerMode = 'list'
+			}
+			this.currentNote = {}
+			this.currentNoteId = null
+			this.mode = mode
+		},
+		changeCategory(categoryId) {
+			this.selectedCategory = categoryId
+			this.filter = { category: categoryId, pubFlag: true, pinFlag: false, offset: 0, limit: 10 }
+			this.changeMode('notes')
+		},
+		showDraft() {
+			this.selectedCategory = -1
+			this.filter = { category: 0, pubFlag: false, pinFlag: false, offset: 0, limit: 0 }
+			this.changeMode('notes')
+		},
+	},
+}
+</script>
+<style scoped>
+#app-content > div {
+	width: 100%;
+	height: 100%;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
+input[type='text'] {
+	width: 100%;
+}
+
+textarea {
+	flex-grow: 1;
+	width: 100%;
+}
+</style>
