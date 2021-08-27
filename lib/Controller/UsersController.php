@@ -142,12 +142,12 @@ class UsersController extends Controller
 		try{
 			$data[IAccountManager::PROPERTY_EMAIL] = $targetUserObject->getEMailAddress();
 
-			$additionalEmails = $additionalEmailScopes = [];
-			$emailCollection = $userAccount->getPropertyCollection(IAccountManager::COLLECTION_EMAIL);
-			foreach ($emailCollection->getProperties() as $property) {
-				$additionalEmails[] = $property->getValue();
-			}
-			$data[IAccountManager::COLLECTION_EMAIL] = $additionalEmails;
+			//$additionalEmails = $additionalEmailScopes = [];
+			//$emailCollection = $userAccount->getPropertyCollection(IAccountManager::COLLECTION_EMAIL);
+			//foreach ($emailCollection->getProperties() as $property) {
+			//	$additionalEmails[] = $property->getValue();
+			//}
+			//$data[IAccountManager::COLLECTION_EMAIL] = $additionalEmails;
 
 			$data[IAccountManager::PROPERTY_DISPLAYNAME] = $targetUserObject->getDisplayName();
 
