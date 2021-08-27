@@ -5,12 +5,12 @@ use Exception;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
-use OCA\WelcomApp\Db\Tag;
-use OCA\WelcomApp\Db\TagMapper;
+use OCA\WelcomApp\Db\WelcomTag;
+use OCA\WelcomApp\Db\WelcomTagMapper;
 
-class TagService {
+class WelcomTagService {
     private $mapper;
-    public function __construct(TagMapper $mapper){
+    public function __construct(WelcomTagMapper $mapper){
         $this->mapper=$mapper;
     }
     public function findAll(){
@@ -32,7 +32,7 @@ class TagService {
         }
     }
     public function create(string $tag_name,int $tag_order,string $color){
-        $tag=new Tag();
+        $tag=new WelcomTag();
         $tag->setTagName($tag_name);
         $tag->setTagOrder($tag_order);
         $tag->setColor($color);

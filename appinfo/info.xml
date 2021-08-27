@@ -4,15 +4,15 @@
     <id>welcomapp</id>
     <name>Welcom App</name>
     <summary>welcome page</summary>
-    <description><![CDATA[welcome page]]></description>
-    <version>0.0.2</version>
+    <description>WelcomApp</description>
+    <version>0.0.3</version>
     <licence>agpl</licence>
     <author mail="info@rockedcube.com" >RockedcubeJPN</author>
     <namespace>WelcomApp</namespace>
     <category>tools</category>
     <bugs>https://rockedcube.com</bugs>
     <dependencies>
-        <nextcloud min-version="15" max-version="15"/>
+        <nextcloud min-version="15" max-version="21"/>
     </dependencies>
     <navigations>
         <navigation>

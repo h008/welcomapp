@@ -3,14 +3,14 @@
 namespace OCA\WelcomApp\Controller;
 
 use OCA\WelcomApp\AppInfo\Application;
-use OCA\WelcomApp\Service\TagService;
+use OCA\WelcomApp\Service\WelcomTagService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class TagController extends Controller
+class WelcomTagController extends Controller
 {
-	/** @var TagService */
+	/** @var WelcomTagService */
 	private $service;
 
 	/** @var string */
@@ -20,7 +20,7 @@ class TagController extends Controller
 
 	public function __construct(
 		IRequest $request,
-		TagService $service,
+		WelcomTagService $service,
 		$userId
 	) {
 		parent::__construct(Application::APP_ID, $request);

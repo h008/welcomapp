@@ -3,7 +3,7 @@ namespace OCA\WelcomApp\Db;
 use JsonSerializable;
 use OCP\AppFramework\Db\Entity;
 
-class Tag extends Entity implements JsonSerializable {
+class WelcomTag extends Entity implements JsonSerializable {
     protected $tagName;
     protected $tagOrder;
     protected $color;

@@ -8,18 +8,18 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
-class TagMapper extends QBMapper {
+class WelcomTagMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'welcomapp_tags', Tag::class);
+		parent::__construct($db, 'welcomapp_tags', WelcomTag::class);
 	}
 
 	/**
 	 * @param int $id
-	 * @return Entity|Tag
+	 * @return Entity|WelcomTag
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): Tag {
+	public function find(int $id): WelcomTag {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')

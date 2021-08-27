@@ -4,7 +4,7 @@ return [
 	'resources' => [
 		'note' => ['url' => '/notes'],
 		'category' => ['url' => '/categories'],
-		'tag' => ['url' => '/tags'],
+		'welcom_tag' => ['url' => '/tags'],
 		'files' => ['url' => '/files'],
 		'users' => ['url' => '/users'],
 		'note_api' => ['url' => '/api/0.1/notes']
