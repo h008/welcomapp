@@ -6,120 +6,122 @@
 			class="modal__window"
 			:class="contentWidth"
 			@click.stop="donothing">
-			<div class="fixed__row">
-				<div class="row__element_end">
+			<div class="modal__action">
+				<div class="modal__button">
 					<Actions>
 						<ActionButton :icon="iconScreenWidth" @click="toggleScreenWidth" />
 					</Actions>
 				</div>
 			</div>
 			<div class="modal__content">
-				<div class="input__label">
-					件名
-				</div>
-
-				<input
-					ref="title"
-					v-model="localNote.title"
-					class="titleinput"
-					type="text">
-				<div class="input__label">
-					カテゴリ
-				</div>
 				<div>
-					<Multiselect
-						v-model="selectedCategory"
-						:options="categories"
-						track-by="id"
-						label="category_name"
-						class="multiselect" />
-				</div>
-				<div class="input__label">
-					内容
-				</div>
-				<div>
-					<Editor
-						id="tm"
-						v-model="localNote.content"
-						:other_options="options" />
-				</div>
-				<div class="input__label">
-					ファイル
-				</div>
-				<div>
-					<div class="fixed__row">
-						<input
-							id="fileinput"
-							ref="fileinput"
-							class="titleinput"
-							type="file"
-							@change="fileselect">
-						<Actions>
-							<ActionButton icon="icon-upload" @click="uploadFile">
-								アップロード
-							</ActionButton>
-						</Actions>
-					</div>
-					<DirList :items.sync="dirInfo"
-						:user-id="user.id"
-						:file-info.sync="localNote.fileInfo"
-						@addcontent="addContent" />
-					<Thums :files="eyecatchFiles" />
 					<div class="input__label">
-						タグ
+						件名
 					</div>
-					<div class="fixed__row">
+
+					<input
+						ref="title"
+						v-model="localNote.title"
+						class="titleinput"
+						type="text">
+					<div class="input__label">
+						カテゴリ
+					</div>
+					<div>
 						<Multiselect
-							v-model="selectedTags"
-							:multiple="true"
-							:options="tags"
+							v-model="selectedCategory"
+							:options="categories"
 							track-by="id"
-							:searchable="true"
-							:taggable="true"
-							:hide-selected="true"
-							label="tag_name">
-							<template slot="tag" slot-scope="{ option, remove }">
-								<span
-									class="multiselect__tag"
-									:style="{ 'background-color': option.color }">
-									<span> {{ option.tag_name }}</span>
+							label="category_name"
+							class="multiselect" />
+					</div>
+					<div class="input__label">
+						内容
+					</div>
+					<div>
+						<Editor
+							id="tm"
+							v-model="localNote.content"
+							:other_options="options" />
+					</div>
+					<div class="input__label">
+						ファイル
+					</div>
+					<div>
+						<div class="fixed__row">
+							<input
+								id="fileinput"
+								ref="fileinput"
+								class="titleinput"
+								type="file"
+								@change="fileselect">
+							<Actions>
+								<ActionButton icon="icon-upload" @click="uploadFile">
+									アップロード
+								</ActionButton>
+							</Actions>
+						</div>
+						<DirList :items.sync="dirInfo"
+							:user-id="user.id"
+							:file-info.sync="localNote.fileInfo"
+							@addcontent="addContent" />
+						<Thums :files="eyecatchFiles" />
+						<div class="input__label">
+							タグ
+						</div>
+						<div class="fixed__row">
+							<Multiselect
+								v-model="selectedTags"
+								:multiple="true"
+								:options="tags"
+								track-by="id"
+								:searchable="true"
+								:taggable="true"
+								:hide-selected="true"
+								label="tag_name">
+								<template slot="tag" slot-scope="{ option, remove }">
 									<span
-										class="custom__remove icon-close"
-										@click="remove(option)" />
-								</span>
-							</template>
-						</Multiselect>
+										class="multiselect__tag"
+										:style="{ 'background-color': option.color }">
+										<span> {{ option.tag_name }}</span>
+										<span
+											class="custom__remove icon-close"
+											@click="remove(option)" />
+									</span>
+								</template>
+							</Multiselect>
+						</div>
+
+						<div class="fixed__row">
+							<div class="row__element">
+								<input
+									id="pin_flag"
+									v-model="localNote.pinFlag"
+									type="checkbox">
+								<label for="pin_flag">常に上部に表示する</label>
+							</div>
+							<div class="row__element">
+								<input
+									id="pub_flag"
+									v-model="localNote.pubFlag"
+									type="checkbox">
+								<label for="pin_flag">公開する</label>
+							</div>
+						</div>
 					</div>
 
 					<div class="fixed__row">
-						<div class="row__element">
+						<div class="row__element_end">
 							<input
-								id="pin_flag"
-								v-model="localNote.pinFlag"
-								type="checkbox">
-							<label for="pin_flag">常に上部に表示する</label>
-						</div>
-						<div class="row__element">
+								type="button"
+								:value="t('welcomapp', '閉じる')"
+								@click="closeDialog">
 							<input
-								id="pub_flag"
-								v-model="localNote.pubFlag"
-								type="checkbox">
-							<label for="pin_flag">公開する</label>
+								type="button"
+								class="primary fixed__row__end"
+								:value="t('welcomapp', '保存')"
+								@click="saveNote">
 						</div>
-					</div>
-				</div>
-
-				<div class="fixed__row">
-					<div class="row__element_end">
-						<input
-							type="button"
-							:value="t('welcomapp', '閉じる')"
-							@click="closeDialog">
-						<input
-							type="button"
-							class="primary fixed__row__end"
-							:value="t('welcomapp', '保存')"
-							@click="saveNote">
 					</div>
 				</div>
 			</div>
@@ -488,11 +490,13 @@ label {
 .modal__wrapper .w800{
 	width:875px;
 	max-height:80vh;
+	overflow-y:auto;
 }
 
 .modal__wrapper .full{
 	width:100vw;
-	height:100%;
+	max-height:100%;
+	overflow-y:auto;
 }
 
 .modal-overlay {
@@ -536,5 +540,19 @@ label {
 .modal__windowaction{
 	display:flex;
 	align-items: flex-end;
+}
+
+.modal__action{
+	position:sticky;
+	top:0px;
+	left:0px;
+	width:100%;
+	z-index:999;
+}
+
+.modal__button{
+	position:absolute;
+	top:0px;
+	right:0px;
 }
 </style>
