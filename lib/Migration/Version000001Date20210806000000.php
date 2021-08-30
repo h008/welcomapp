@@ -17,7 +17,20 @@ class Version000001Date20210806000000 extends SimpleMigrationStep {
     public function changeSchema(IOutput $output,Closure $schemaClosure,array $options){
         /**@var ISchemaWrapper $schema */
         $schema = $schemaClosure();
-        
+        if(!$schema->hasTable('welcomapp_config')){
+            $table=$schema->createTable('welcomapp_config');
+        } else{
+            $table=$schema->getTable('welcomapp_config');
+        }
+        if(!$table->hasColumn('id')){
+            $table->addColumn('id','integer',['autoincrement'=>true,'notnull'=>true,]);
+            $table->addColumn('kind','string',['notnull'=>true]);
+            $table->addColumn('key','string',['notnull'=>true]);
+            $table->addColumn('value','string',['notnull'=>true]);
+            $table->addColumn('user_id','string',['notnull'=>true]);
+            $table->setPrimaryKey(['id']);
+            $table->addIndex(['kind'],'welcomapp_config_kind_index');
+        }
         if(!$schema->hasTable('welcomapp_files')){
             $table=$schema->createTable('welcomapp_files');
         }else {

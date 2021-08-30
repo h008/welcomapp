@@ -7,6 +7,7 @@ return [
 		'welcom_tag' => ['url' => '/tags'],
 		'files' => ['url' => '/files'],
 		'users' => ['url' => '/users'],
+		'config'=>['url'=>'/config'],
 		'note_api' => ['url' => '/api/0.1/notes']
 	],
 	'routes' => [
@@ -17,6 +18,7 @@ return [
 		['name' => 'note#filtercount','url'=>'/filtercount','verb' =>'GET'],
 		['name' => 'users#getAllUsers','url'=>'/getusers','verb' =>'GET'],
 		['name' => 'users#getUserInfo','url'=>'/getuser/{id}','verb' =>'GET'],
-		['name' => 'files#showByAid','url'=>'/getfiles/{fileurl}','verb'=>'GET']
+		['name' => 'files#showByAid','url'=>'/getfiles/{fileurl}','verb'=>'GET'],
+		['name' => 'config#showByKind','url'=>'/getconfig/{kind}','varb'=>'GET'],
 	]
 ];

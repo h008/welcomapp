@@ -193,6 +193,52 @@ export default {
 			 })
 
 	},
+	fetchHeader(userId) {
+		return axios.get(generateUrl('/apps/welcomapp/getconfig/header')).then((result) => {
+			if (result.data && result.data.length) {
+
+				const tmpData = result.data[0]
+				if (tmpData.value) {
+					let s = tmpData.value
+					// preserve newlines, etc - use valid JSON
+					s = s.replace(/\\n/g, '\\n')
+						.replace(/\\'/g, "\\'")
+						.replace(/\\"/g, '\\"')
+						.replace(/\\&/g, '\\&')
+						.replace(/\\r/g, '\\r')
+						.replace(/\\t/g, '\\t')
+						.replace(/\\b/g, '\\b')
+						.replace(/\\f/g, '\\f')
+
+					// remove non-printable and other non-valid JSON chars
+					// s = s.replace(/[\u0000-\u0019]+/g, '')
+					const value = JSON.parse(s)
+					tmpData.value = value
+					if (value.shareId) {
+						return this.fetchShareInfo(value.shareId).then((userDir) => {
+							const headerDir = `${userId}${userDir}/headers`
+							return this.fetchDirInfo(headerDir).then((dirInfo) => {
+								const regex = /image/
+								const headerDirInfo = dirInfo.filter((element) => regex.test(element.filetype)).map((file) => file.href)
+								tmpData.images = headerDirInfo
+								return tmpData
+							})
+
+						})
+
+					} else {
+						return tmpData
+					}
+				} else {
+					return tmpData
+
+				}
+			} else {
+				return Promise.resolve({})
+			}
+		})
+
+	},
 		 fetchFileInfo(uuid, userId, userDir) {
 			 if (!uuid) { return Promise.resolve([]) }
 		return axios.get(generateUrl(`/apps/welcomapp/getfiles/${uuid}`)).then((result) => {

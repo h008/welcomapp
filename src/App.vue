@@ -43,6 +43,14 @@
 				button-id="tags-welcomapp-button"
 				button-class="icon-add"
 				@click="changeMode('tagSetting')" />
+			<AppNavigationItem
+				v-if="!loading && canAnnounce"
+				title="ヘッダの設定"
+				:text="t('welcomapp', 'ヘッダの設定')"
+				:disabled="false"
+				button-id="header-welcomapp-button"
+				button-class="icon-add"
+				@click="changeMode('headerSetting')" />
 		</AppNavigation>
 		<AppContent v-if="user && user.id">
 			<div v-if="mode=='notes'">
@@ -54,6 +62,7 @@
 					:user="user"
 					:users="users"
 					:mode.sync="containerMode"
+					:header-config="headerConfig"
 					:filter.sync="filter" />
 			</div>
 			<div v-if="mode=='categorySetting'">
@@ -61,6 +70,9 @@
 			</div>
 			<div v-if="mode=='tagSetting'">
 				<TagSetting :tags.sync="tags" />
+			</div>
+			<div v-if="mode=='headerSetting'">
+				<HeaderEdit :user="user" :header-config.sync="headerConfig" />
 			</div>
 
 			<div v-if="!notes" id="emptycontent">
@@ -86,6 +98,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Container from './components/Container.vue'
 import CategorySetting from './components/CategorySetting.vue'
 import TagSetting from './components/TagSetting.vue'
+import HeaderEdit from './components/HeaderEdit.vue'
 import Mymodules from './js/modules'
 
 export default {
@@ -98,6 +111,7 @@ export default {
 		Container,
 		CategorySetting,
 		TagSetting,
+		HeaderEdit,
 	},
 	data() {
 		return {
@@ -116,6 +130,7 @@ export default {
 			users: [],
 			testData: null,
 			filter: { category: 0, pubFlag: true, pinFlag: false, offset: 0, limit: 0 },
+			headerConfig: {},
 		}
 	},
 	computed: {
@@ -150,6 +165,7 @@ export default {
 		this.fetchUserData()
 		this.fetchCategories()
 		this.fetchTags()
+
 		axios.get(generateUrl('/apps/welcomapp/getusers')).then((result) => {
 			this.users = result.data
 		})
@@ -193,6 +209,7 @@ export default {
 
 		 })
 					}
+					this.fetchHeader()
 				}
 			}).catch((e) => console.error(e))
 		},
@@ -213,6 +230,48 @@ export default {
 				this.tags = response.data
 			} catch (e) {
 				showError(t('welcomapp', 'Could not fetch tags'))
+			}
+		},
+		async fetchHeader() {
+			if (this.user.id) {
+				Mymodules.fetchHeader(this.user.id).then((result) => {
+					this.headerConfig = result
+				})
+
+			}
+			try {
+				 axios.get(generateUrl('/apps/welcomapp/getconfig/header')).then((result) => {
+					if (result.data && result.data.length) {
+
+						const tmpData = result.data[0]
+						console.info(tmpData)
+						if (tmpData.value) {
+							let s = tmpData.value
+							// preserve newlines, etc - use valid JSON
+							s = s.replace(/\\n/g, '\\n')
+								.replace(/\\'/g, "\\'")
+								.replace(/\\"/g, '\\"')
+								.replace(/\\&/g, '\\&')
+								.replace(/\\r/g, '\\r')
+								.replace(/\\t/g, '\\t')
+								.replace(/\\b/g, '\\b')
+								.replace(/\\f/g, '\\f')
+
+							// remove non-printable and other non-valid JSON chars
+							// s = s.replace(/[\u0000-\u0019]+/g, '')
+							tmpData.value = JSON.parse(s)
+						}
+						return tmpData
+					} else {
+						return {}
+					}
+				}).then((data) => {
+					// this.headerConfig = data
+					console.info(data)
+				})
+
+			} catch (e) {
+				showError('Could not fetch Header')
 			}
 		},
 		/**

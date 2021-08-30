@@ -1,9 +1,7 @@
 <template>
 	<div class="container">
+		<Header :header-config="headerConfig" />
 		<div class="card">
-			<div>
-				<h1>アナウンス</h1>
-			</div>
 			<Detail v-if="mode=='detail'"
 				:note="localCurrentNote"
 				:user="user"
@@ -41,6 +39,7 @@ import List from './List.vue'
 import PinList from './PinList.vue'
 import Detail from './Detail.vue'
 import Form from './Form.vue'
+import Header from './Header.vue'
 import { emit } from '@nextcloud/event-bus'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
@@ -52,6 +51,7 @@ export default {
 		PinList,
 		Detail,
 		Form,
+		Header,
 	},
 	props: {
 		notes: {
@@ -85,6 +85,10 @@ export default {
 		filter: {
 			type: Object,
 			default: () => { return { category: 0 } },
+		},
+		headerConfig: {
+			type: Object,
+			default: () => { return {} },
 		},
 
 	},

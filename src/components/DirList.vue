@@ -34,10 +34,10 @@
 					<span v-if="unregisteredItemIds.includes(item.id)">★</span>
 				</template>
 				<template slot="actions">
-					<ActionCheckbox v-if="item.filetype.search(/image/) !== -1" :checked="item.isEyecatch==1" @change="setEyecatch(item,$event)">
+					<ActionCheckbox v-if="item.filetype.search(/image/) !== -1 && fileInfo" :checked="item.isEyecatch==1" @change="setEyecatch(item,$event)">
 						アイキャッチにする{{ item.isEyecatch }}
 					</ActionCheckbox>
-					<ActionButton v-if="item.filetype.search(/image/) !== -1" icon="icon-picture" @click="addContent(item)">
+					<ActionButton v-if="item.filetype.search(/image/) !== -1 && fileInfo" icon="icon-picture" @click="addContent(item)">
 						本文に表示する
 					</ActionButton>
 					<ActionButton icon="icon-delete" @click="removeFile(item)">
