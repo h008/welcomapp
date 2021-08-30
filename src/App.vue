@@ -198,8 +198,8 @@ export default {
 
 					if (this.user.groups.includes('announce')) {
 						console.info(this.user)
-						Mymodules.fetchDirInfoOrCreate(`${this.user.id}/announce`).then(() => {
-							const data = { path: 'announce', shareType: 1, shareWith: 'all_users', publicUpload: 'false', permissions: 1 }
+						Mymodules.fetchDirInfoOrCreate(`${this.user.id}/announce_${this.user.id}`).then(() => {
+							const data = { path: `announce_${this.user.id}`, shareType: 1, shareWith: 'all_users', publicUpload: 'false', permissions: 1 }
 							return axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result2) => {
 								const shareId = result2?.data?.ocs?.data?.id
 								if (shareId) {

@@ -308,7 +308,7 @@ export default {
 						note.userInfo = userInfo
 						note.userDir = userDir
 				 if (note.content) {
-					 const beforeStr = `/${note.userId}/announce`
+					 const beforeStr = `/${note.userId}/announce_${note.userId}`
 					 const afterStr = `/${userId}${userDir}`
 							note.content = note.content.replace(beforeStr, afterStr)
 				 }

@@ -286,7 +286,7 @@ export default {
 				this.selectedTags = []
 			}
 			if (val.uuid && this.dialog) {
-				this.setDirInfo(`${this.user.id}/announce/${val.uuid}`)
+				this.setDirInfo(`${this.user.id}/announce_${this.user.id}/${val.uuid}`)
 			} else { this.dirInfo = [] }
 		},
 
@@ -371,7 +371,7 @@ export default {
 
 			if (this.selectedFile) {
 				if (this.user.id && this.note.uuid) {
-					const path = `${this.user.id}/announce/${this.note.uuid}`
+					const path = `${this.user.id}/announce_${this.user.id}/${this.note.uuid}`
 					Mymodules.fetchDirInfoOrCreate(path).then((result) => {
 						this.fileDir = path
 						axios.put(`/remote.php/dav/files/${path}/${this.selectedFile.name}`, this.selectedFile).then((result) => {

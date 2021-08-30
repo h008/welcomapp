@@ -111,7 +111,7 @@ export default {
 	methods: {
 		fetchDirInfo() {
 			if (!this.user.id) { return }
-			this.fileDir = `${this.user.id}/announce/headers`
+			this.fileDir = `${this.user.id}/announce_${this.user.id}/headers`
 			Mymodules.fetchDirInfoOrCreate(this.fileDir).then((dirInfo) => {
 				const regex = /image/
 				this.dirInfo = dirInfo.filter((elm) => regex.test(elm.filetype))
