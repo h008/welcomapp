@@ -208,19 +208,18 @@ export default {
 		 }).catch((e) => {
 								console.info('shareAPIerror')
 							 axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result3) => {
-								const tmpArray=result3?.data?.ocs?.data
-								console.info(tmpArray)
-								if(tmpArray && tmpArray.length){
-								const target = tmpArray.find((elem)=>elem.file_target===`/announce_${this.user.id}`)
-								if(target){
-									console.info('target')
-									console.info(target)
-									this.$set(this.user, 'shareId', target.id)
-									
-								}
-								}
+									const tmpArray = result3?.data?.ocs?.data
+									console.info(tmpArray)
+									if (tmpArray && tmpArray.length) {
+										const target = tmpArray.find((elem) => elem.file_target === `/announce_${this.user.id}`)
+										if (target) {
+											console.info('target')
+											console.info(target)
+											this.$set(this.user, 'shareId', target.id)
 
-									
+										}
+									}
+
 								})
 		 })
 
