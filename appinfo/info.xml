@@ -5,7 +5,7 @@
     <name>Welcom App</name>
     <summary>welcome page</summary>
     <description>WelcomApp</description>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
     <licence>agpl</licence>
     <author mail="info@rockedcube.com" >RockedcubeJPN</author>
     <namespace>WelcomApp</namespace>
