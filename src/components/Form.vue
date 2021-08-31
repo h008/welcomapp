@@ -291,6 +291,7 @@ export default {
 		},
 
 		saveNote() {
+			console.info(this.localNote)
 			Mymodules.saveNote(this.localNote)
 				.then((result) => {
 

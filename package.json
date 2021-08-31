@@ -1,7 +1,7 @@
 {
 	"name": "welcomapp",
 	"description": "A simple Nextcloud app tutorial for building a notes app",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"author": "Julius Härtl <jus@bitgrid.net",
 	"contributors": [
 		"John Molakvoæ <skjnldsv@protonmail.com>"
