@@ -142,7 +142,7 @@ export default {
 				if (this.user.id && this.fileDir) {
 					axios.put(`/remote.php/dav/files/${this.fileDir}/${this.selectedFile.name}`, this.selectedFile).then((result) => {
 						if (result.status === 201 || result.status === 204) {
-							console.info('200')
+							this.fetchDirInfo()
 						} else {
 							console.info(result)
 
