@@ -44,7 +44,9 @@ export default {
 	},
 	mounted() {
 		setInterval(() => {
-			this.visible_content = (this.visible_content + 1) % (this.headerConfig.images.length)
+			if (this.headerConfig && this.headerConfig.images && this.headerConfig.images.length) {
+				this.visible_content = (this.visible_content + 1) % (this.headerConfig.images.length)
+			}
 		}, 4000)
 
 	},
