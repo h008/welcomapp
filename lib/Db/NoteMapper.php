@@ -68,10 +68,7 @@ class NoteMapper extends QBMapper {
 			));
 			$qb->andWhere($qb->expr()->eq('user_id',$qb->createNamedParameter($userId)));
 		}else{
-			$qb->where($qb->expr()->orX(
-				$qb->expr()->eq('pub_flag',$qb->createNamedParameter($pubFlag,IQueryBuilder::PARAM_INT)),
-				$qb->expr()->eq('pub_flag',$qb->createNamedParameter($pubFlag,IQueryBuilder::PARAM::BOOL)),
-			));
+			$qb->where($qb->expr()->eq('pub_flag',$qb->createNamedParameter(1,IQueryBuilder::PARAM_INT)));
 
 		}
 		if($category != 0){
