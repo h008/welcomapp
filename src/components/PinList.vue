@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Loader v-if="loading" />
+		{{filter}}
 		<div v-else-if="localList && localList.length" class="d-block">
 			<div class="card__wrapper">
 				<PinCard v-for="item in localList"

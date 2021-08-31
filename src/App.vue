@@ -134,20 +134,6 @@ export default {
 		}
 	},
 	computed: {
-		/**
-		 * Return the currently selected note object
-		 *
-		 * @return {object | null}
-		 */
-
-		/**
-		 * Returns true if a note is selected and its title is not empty
-		 *
-		 * @return {boolean}
-		 */
-		savePossible() {
-			return this.currentNote && this.currentNote.title !== ''
-		},
 		canAnnounce() {
 			if (!this.user || !this.user.groups) { return false }
 			return this.user.groups.includes('announce')
@@ -292,32 +278,6 @@ export default {
 		},
 		/**
 		 * Create a new note and focus the note content field automatically
-		 *
-		 * @param {number} noteId Number
-		 */
-		openNote(noteId) {
-			if (this.updating) {
-				return
-			}
-			this.currentNoteId = noteId
-			const tmpData = this.notes.find((note) => note.id === noteId)
-			this.currentNote = Object.assign({}, tmpData)
-
-			this.content = this.currentNote.content
-		},
-		/**
-		 * Action tiggered when clicking the save button
-		 * create a new note or save
-		 */
-		saveNote() {
-			if (this.currentNote.id === -1) {
-				this.createNote(this.currentNote)
-			} else {
-				this.updateNote(this.currentNote)
-			}
-		},
-		/**
-		 * Create a new note and focus the note content field automatically
 		 * The note is not yet saved, therefore an id of -1 is used until it
 		 * has been persisted in the backend
 		 */
@@ -360,64 +320,6 @@ export default {
 			this.currentNoteId = null
 			this.currentNote = null
 			this.content = null
-		},
-		/**
-		 * Create a new note by sending the information to the server
-		 *
-		 * @param {object} note Note object
-		 */
-		async createNote(note) {
-			this.updating = true
-			try {
-				const response = await axios.post(
-					generateUrl('/apps/welcomapp/notes'),
-					note
-				)
-				const index = this.notes.findIndex(
-					(match) => match.id === this.currentNoteId
-				)
-				this.$set(this.notes, index, response.data)
-				this.currentNoteId = response.data.id
-			} catch (e) {
-				console.error(e)
-				showError(t('welcomapp', 'Could not create the note'))
-			}
-			this.updating = false
-		},
-		/**
-		 * Update an existing note on the server
-		 *
-		 * @param {object} note Note object
-		 */
-		async updateNote(note) {
-			this.updating = true
-			try {
-				await axios.put(generateUrl(`/apps/welcomapp/notes/${note.id}`), note)
-			} catch (e) {
-				console.error(e)
-				showError(t('welcomapp', 'Could not update the note'))
-			}
-			this.updating = false
-		},
-		/**
-		 * Delete a note, remove it from the frontend and show a hint
-		 *
-		 * @param {object} note Note object
-		 */
-		async deleteNote(note) {
-			try {
-				await axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
-				this.notes.splice(this.notes.indexOf(note), 1)
-				if (this.currentNoteId === note.id) {
-					this.currentNoteId = null
-					this.currentNote = null
-					this.content = null
-				}
-				showSuccess(t('welcomapp', 'Note deleted'))
-			} catch (e) {
-				console.error(e)
-				showError(t('welcomapp', 'Could not delete the note'))
-			}
 		},
 		changeMode(mode) {
 			if (mode === 'notes') {
