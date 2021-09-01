@@ -4,7 +4,6 @@
 			<div class="header_body">
 				<transition-group :name="transition_name">
 					<img v-for="(content,index) in dirInfo"
-						v-show="isVisible(index)"
 						:key="`image_${index}`"
 						class="header_img"
 						:class="isVisible(index)"
@@ -103,6 +102,7 @@ import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import ColorPicker from '@nextcloud/vue/dist/Components/ColorPicker'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
+import { showSuccess } from '@nextcloud/dialogs'
 import DirList from './DirList.vue'
 import Thums from './Thums.vue'
 export default {
@@ -139,10 +139,12 @@ export default {
 		}
 	},
 	mounted() {
-		setInterval(() => {
-			this.visible_content = (this.visible_content + 1) % (this.dirInfo.length)
-		}, 4000)
 		this.fetchDirInfo()
+		setInterval(() => {
+			if (this.dirInfo.length > 1) {
+				this.visible_content = (this.visible_content + 1) % (this.dirInfo.length)
+			}
+		}, 10000)
 		if (this.headerConfig) {
 			this.title = this.headerConfig.value.title
 			this.subTitle = this.headerConfig.value.subTitle
@@ -242,6 +244,7 @@ export default {
 							tmpData.value = JSON.parse(s)
 						}
 						this.$emit('update:headerConfig', tmpData)
+						showSuccess(t('welcomapp', 'save Header'))
 					}
 				}).catch((e) => {
 					console.info(e)
@@ -280,17 +283,19 @@ export default {
 
 		.header_img{
 			color:#fff;
-			height:300px;
+			height:auto;
 			left:0;
 			line-height:150px;
 			position:absolute;
 			text-align:center;
 			top:0;
 			width:100%;
+			object-fit: cover;
+			opacity: 0.0;
 
 		}
 		.is-visible{
-			background-color:#7b94f9;
+			opacity: 1.0;
 		}
 	}
 	.welcom_title{
@@ -355,22 +360,38 @@ export default {
 }
 
 .show-next-enter-active, .show-next-leave-active, .show-prev-enter-active, .show-prev-leave-active {
-	transition:all .6s;
+	transition:all 1s;
 
-}
-
-.show-next-enter, .show-prev-leave-to{
-	transform:translateX(100%);
-}
-
-.show-next-leave-to, .show-prev-enter{
-	transform:translateX(-100%);
 }
 
 .header__form{
 	padding:20px;
 	input {
 		width:400px;
+	}
+}
+
+.header_img{
+	animation-name:pictmove;
+	animation-timing-function:linear;
+	animation-iteration-count:infinite;
+	animation-direction:alternate;
+	animation-duration:20s;
+}
+@keyframes pictmove {
+	0% {
+		transform:translate(0,0px);
+	}
+	100%{
+		transform:translate(0,-50%);
+	}
+}
+@keyframes fadeIn {
+	0%{
+		opacity: 0.0;
+	}
+	100%{
+		opacity:1.0;
 	}
 }
 

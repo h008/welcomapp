@@ -54,10 +54,10 @@ export default {
 	},
 	mounted() {
 		setInterval(() => {
-			if (this.headerConfig && this.headerConfig.images && this.headerConfig.images.length) {
+			if (this.headerConfig && this.headerConfig.images && this.headerConfig.images.length > 1) {
 				this.visible_content = (this.visible_content + 1) % (this.headerConfig.images.length)
 			}
-		}, 4000)
+		}, 10000)
 
 	},
 	methods: {
@@ -90,18 +90,20 @@ export default {
 
 		.header_img{
 			color:#fff;
-			height:300px;
+			height:auto;
 			left:0;
 			line-height:150px;
 			position:absolute;
 			text-align:center;
 			top:0;
 			width:100%;
+			object-fit:cover;
+			//opacity:0.0
 
 		}
-		.is-visible{
-			background-color:#7b94f9;
-		}
+		//.is-visible{
+		//opacity: 1.0;
+		//}
 	}
 	.welcom_title{
 		width:100%;
@@ -158,22 +160,42 @@ export default {
 			}
 			.is-visible{
 				background-color:#7b94f9;
+				animation-name:fadeIn;
+				animation-duration:1s;
+				animation-iteration-count: 1;
+
 			}
 		}
 	}
 }
 
 .show-next-enter-active, .show-next-leave-active, .show-prev-enter-active, .show-prev-leave-active {
-	transition:all .6s;
+	transition:all 1s;
 
 }
 
 .show-next-enter, .show-prev-leave-to{
-	transform:translateX(100%);
+	opacity:0.8
 }
 
 .show-next-leave-to, .show-prev-enter{
-	transform:translateX(-100%);
+	opacity:0.0
+}
+
+.header_img{
+	animation-name:pictmove;
+	animation-timing-function:linear;
+	animation-iteration-count:infinite;
+	animation-direction:alternate;
+	animation-duration:31s;
+}
+@keyframes pictmove {
+	0% {
+		transform:translate(0,0px);
+	}
+	100%{
+		transform:translate(0,-50%);
+	}
 }
 
 </style>
