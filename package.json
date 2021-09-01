@@ -1,10 +1,10 @@
 {
 	"name": "welcomapp",
 	"description": "A simple Nextcloud app tutorial for building a notes app",
-	"version": "0.0.11",
-	"author": "Julius Härtl <jus@bitgrid.net",
+	"version": "0.0.12",
+	"author": "rockedcubeJPN <info@rockedcube.com>",
 	"contributors": [
-		"John Molakvoæ <skjnldsv@protonmail.com>"
+		"rockedcubeJPN <info@rockedcube.com>"
 	],
 	"bugs": {
 		"url": "https://github.com/nextcloud/app-tutorial/issues"

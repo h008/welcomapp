@@ -12,15 +12,25 @@
 				</transition-group>
 			</div>
 			<div class="welcom_title">
-				<div class="title_text">
-					{{ title }}
+				<div class="titles">
+					<div class="title_text" :style="{'color':color}">
+						{{ title }}
+					</div>
+					<div class="subtitle_text" :style="{'color':color}">
+						{{ subTitle }}
+					</div>
+					<div class="message_text">
+						{{ messageTxt }}
+					</div>
 				</div>
 			</div>
 			<div class="welcom_footer">
-				<div v-for="(content, index) in contents"
-					:key="`dot_${index}`"
-					class="welcom_footer_dot"
-					:class="isVisible(index)" />
+				<div class="welcom_footer_dot_wrapper">
+					<div v-for="(content, index) in dirInfo"
+						:key="`dot_${index}`"
+						class="welcom_footer_dot"
+						:class="isVisible(index)" />
+				</div>
 			</div>
 		</div>
 		<div class="header__form">
@@ -31,6 +41,32 @@
 			<input
 				ref="title"
 				v-model="title"
+				class="titleinput"
+				type="text">
+			<div class="input__label">
+				サブタイトル
+			</div>
+
+			<input
+				ref="subtitle"
+				v-model="subTitle"
+				class="titleinput"
+				type="text">
+			<div class="input__label">
+				文字色
+			</div>
+			<ColorPicker v-model="color">
+				<button :style="{'background-color':color}">
+					カラーを選択
+				</button>
+			</ColorPicker>
+			<div class="input__label">
+				メッセージ
+			</div>
+
+			<input
+				ref="messagetxt"
+				v-model="messageTxt"
 				class="titleinput"
 				type="text">
 			<div class="input__label">
@@ -64,6 +100,7 @@
 import Mymodules from '../js/modules'
 import Actions from '@nextcloud/vue/dist/Components/Actions'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
+import ColorPicker from '@nextcloud/vue/dist/Components/ColorPicker'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import DirList from './DirList.vue'
@@ -73,6 +110,7 @@ export default {
 	components: {
 		Actions,
 		ActionButton,
+		ColorPicker,
 		 DirList,
 		Thums,
 
@@ -91,10 +129,9 @@ export default {
 		return {
 			img: '',
 			title: 'タイトル',
-			contents: [
-				'http://localhost:8000/index.php/core/preview?fileId=83&x=2112&y=1320&a=true',
-				'http://localhost:8000/index.php/s/mq9o37yNwnQssyY',
-			],
+			subTitle: 'サブタイトル',
+			messageTxt: 'メッセージテキスト',
+			color: '',
 			transition_name: 'show-next',
 			visible_content: 0,
 			selectedFile: null,
@@ -106,6 +143,12 @@ export default {
 			this.visible_content = (this.visible_content + 1) % (this.dirInfo.length)
 		}, 4000)
 		this.fetchDirInfo()
+		if (this.headerConfig) {
+			this.title = this.headerConfig.value.title
+			this.subTitle = this.headerConfig.value.subTitle
+			this.messageTxt = this.headerConfig.value.messageTxt
+			this.color = this.headerConfig.value.color
+		}
 
 	},
 	methods: {
@@ -176,6 +219,9 @@ export default {
 		saveConfig() {
 			const value = {
 				title: this.title,
+				subTitle: this.subTitle,
+				messageTxt: this.messageTxt,
+				color: this.color,
 				shareId: this.user.shareId,
 			}
 			const data = {
@@ -252,20 +298,35 @@ export default {
 		height:100%;
 		background-color:white;
 		opacity:0.4;
-		.title_text{
-			position:absolute;
+		display:flex;
+		justify-content:center;
+		align-items:center;
 
-			top:50%;
-			left:50%;
-			font-size: 3rem;
-			font-weight:bold;
-			vertical-align:center;
-			text-align: center;
-			-ms-transform: translate(-50%,-50%);
-			-webkit-transform: translate(-50%,-50%);
-			transform: translate(-50%,-50%);
-			margin:0;
-			padding:20px;
+		.titles{
+
+			.title_text{
+				line-height:1.2;
+				font-size: 3rem;
+				font-weight:bold;
+				text-align: center;
+				padding-bottom:8px;
+				margin-bottom:10px;
+				border-bottom:3px solid;
+
+			}
+			.subtitle_text{
+				line-height:1.2;
+				font-size:2rem;
+				font-weight:bolder;
+				text-align: center;
+				margin-bottom:10px;
+			}
+			.message_text{
+				line-height:1.5;
+				font-size:1rem;
+				text-align: center;
+
+			}
 		}
 
 	}
@@ -273,18 +334,22 @@ export default {
 		align-items:center;
 		display:flex;
 		height:50px;
-		justify-content:space-between;
-		position:absolute;
-		bottom:20px;
+		justify-content:center;
+		bottom:10px;
 		width:100%;
-		.welcom_footer_dot{
-			background-color:#abc2ce;
-			border-radius:50%;
-			height:6px;
-			width:6px;
-		}
-		.is-visible{
-			background-color:#7b94f9;
+		.welcom_footer_dot_wrapper{
+			width:50%;
+			justify-content:space-between;
+
+			.welcom_footer_dot{
+				background-color:#abc2ce;
+				border-radius:50%;
+				height:6px;
+				width:6px;
+			}
+			.is-visible{
+				background-color:#7b94f9;
+			}
 		}
 	}
 }

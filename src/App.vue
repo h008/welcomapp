@@ -91,7 +91,7 @@ import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
 
 // import '@nextcloud/dialogs/styles/toast.scss'
 import { generateUrl } from '@nextcloud/router'
-import { showError, showSuccess } from '@nextcloud/dialogs'
+import { showError } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
 import { v4 as uuidv4 } from 'uuid'
 

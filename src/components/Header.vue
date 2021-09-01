@@ -11,15 +11,25 @@
 			</transition-group>
 		</div>
 		<div v-if="headerConfig && headerConfig.value && headerConfig.value.title" class="welcom_title">
-			<div class="title_text">
-				{{ headerConfig.value.title }}
+			<div class="titles">
+				<div class="title_text" :style="{'color':headerConfig.value.color}">
+					{{ headerConfig.value.title }}
+				</div>
+				<div class="subtitle_text" :style="{'color':headerConfig.value.color}">
+					{{ headerConfig.value.subTitle }}
+				</div>
+				<div class="message_text">
+					{{ headerConfig.value.messageTxt }}
+				</div>
 			</div>
 		</div>
 		<div class="welcom_footer">
-			<div v-for="(content, index) in headerConfig.images"
-				:key="`dot_${index}`"
-				class="welcom_footer_dot"
-				:class="isVisible(index)" />
+			<div class="welcom_fotter_dot_wrapper">
+				<div v-for="(content, index) in headerConfig.images"
+					:key="`dot_${index}`"
+					class="welcom_footer_dot"
+					:class="isVisible(index)" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -98,19 +108,35 @@ export default {
 		height:100%;
 		background-color:white;
 		opacity:0.4;
-		.title_text{
-			position:absolute;
-			top:50%;
-			left:50%;
-			font-size: 3rem;
-			font-weight:bold;
-			vertical-align:center;
-			text-align: center;
-			-ms-transform: translate(-50%,-50%);
-			-webkit-transform: translate(-50%,-50%);
-			transform: translate(-50%,-50%);
-			margin:0;
-			padding:20px;
+		display:flex;
+		justify-content:center;
+		align-items:center;
+
+		.titles{
+
+			.title_text{
+				line-height:1.2;
+				font-size: 3rem;
+				font-weight:bold;
+				text-align: center;
+				padding-bottom:8px;
+				margin-bottom:10px;
+				border-bottom:3px solid;
+
+			}
+			.subtitle_text{
+				line-height:1.2;
+				font-size:2rem;
+				font-weight:bolder;
+				text-align: center;
+				margin-bottom:10px;
+			}
+			.message_text{
+				line-height:1.5;
+				font-size:1rem;
+				text-align: center;
+
+			}
 		}
 
 	}
@@ -118,18 +144,21 @@ export default {
 		align-items:center;
 		display:flex;
 		height:50px;
-		justify-content:space-between;
-		position:absolute;
-		bottom:20px;
-		width:50%;
-		.welcom_footer_dot{
-			background-color:#abc2ce;
-			border-radius:50%;
-			height:6px;
-			width:6px;
-		}
-		.is-visible{
-			background-color:#7b94f9;
+		justify-content:center;
+		bottom:10px;
+		width:100%;
+		.welcom_footer_dot_wrapper{
+			width:50%;
+			justify-content:space-between;
+			.welcom_footer_dot{
+				background-color:#abc2ce;
+				border-radius:50%;
+				height:6px;
+				width:6px;
+			}
+			.is-visible{
+				background-color:#7b94f9;
+			}
 		}
 	}
 }
