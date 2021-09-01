@@ -35,7 +35,7 @@
 				</template>
 				<template slot="actions">
 					<ActionCheckbox v-if="item.filetype.search(/image/) !== -1 && fileInfo" :checked="item.isEyecatch==1" @change="setEyecatch(item,$event)">
-						アイキャッチにする{{ item.isEyecatch }}
+						アイキャッチにする
 					</ActionCheckbox>
 					<ActionButton v-if="item.filetype.search(/image/) !== -1 && fileInfo" icon="icon-picture" @click="addContent(item)">
 						本文に表示する

@@ -12,7 +12,6 @@
 					:details="item.updated"
 					@click.stop="showDetail(item)">
 					<template #subtitle>
-						{{ item.tags }}
 						<TagBadges :tags="tags" :display-tag-ids="item.tags" />
 						<div>
 							{{ striptag(item.content) }}

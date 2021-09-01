@@ -28,7 +28,7 @@
 				button-class="icon-add"
 				@click="newNote" />
 			<AppNavigationItem
-				v-if="!loading && canAnnounce"
+				v-if="!loading && isAdmin"
 				title="カテゴリーの設定"
 				:text="t('welcomapp', 'カテゴリーの設定')"
 				:disabled="false"
@@ -36,7 +36,7 @@
 				button-class="icon-add"
 				@click="changeMode('categorySetting')" />
 			<AppNavigationItem
-				v-if="!loading && canAnnounce"
+				v-if="!loading && isAdmin"
 				title="タグの設定"
 				:text="t('welcomapp', 'タグの設定')"
 				:disabled="false"
@@ -44,7 +44,7 @@
 				button-class="icon-add"
 				@click="changeMode('tagSetting')" />
 			<AppNavigationItem
-				v-if="!loading && canAnnounce"
+				v-if="!loading && isAdmin"
 				title="ヘッダの設定"
 				:text="t('welcomapp', 'ヘッダの設定')"
 				:disabled="false"
@@ -65,13 +65,13 @@
 					:header-config="headerConfig"
 					:filter.sync="filter" />
 			</div>
-			<div v-if="mode=='categorySetting'">
+			<div v-if="mode=='categorySetting' && isAdmin">
 				<CategorySetting :categories.sync="categories" />
 			</div>
-			<div v-if="mode=='tagSetting'">
+			<div v-if="mode=='tagSetting' && isAdmin">
 				<TagSetting :tags.sync="tags" />
 			</div>
-			<div v-if="mode=='headerSetting'">
+			<div v-if="mode=='headerSetting' && isAdmin">
 				<HeaderEdit :user="user" :header-config.sync="headerConfig" />
 			</div>
 
@@ -137,6 +137,10 @@ export default {
 		canAnnounce() {
 			if (!this.user || !this.user.groups) { return false }
 			return this.user.groups.includes('announce')
+		},
+		isAdmin() {
+			if (!this.user || !this.user.groups) { return false }
+			return this.user.groups.includes('webmaster')
 		},
 
 	},
