@@ -108,6 +108,7 @@
 								<input
 									id="pin_flag"
 									v-model="localNote.pinFlag"
+									:disabled="!canSave"
 									type="checkbox">
 								<label for="pin_flag">常に上部に表示する</label>
 							</div>
@@ -115,6 +116,7 @@
 								<input
 									id="pub_flag"
 									v-model="localNote.pubFlag"
+									:disabled="!selectedGroups.length"
 									type="checkbox">
 								<label for="pin_flag">公開する</label>
 							</div>
@@ -131,6 +133,7 @@
 								type="button"
 								class="primary fixed__row__end"
 								:value="t('welcomapp', '保存')"
+								:disabled="!canSave"
 								@click="saveNote">
 						</div>
 					</div>
@@ -225,20 +228,19 @@ export default {
 		},
 		editorContent: {
 			get() {
-				console.info('get')
-				return this.localNote.content
+				return this.localNote.content || ''
 			},
 			set(val) {
-				console.info('set')
 				this.$set(this.localNote, 'content', val)
 			},
+		},
+		canSave() {
+			return (this.localNote.title && this.selectedCategory.id && this.localNote.content)
 		},
 	},
 	watch: {
 		note(val) {
 			this.initializeNote(val)
-			console.info('formupdated')
-			console.info(this.localNote.dirInfo)
 		},
 		selectedCategory(val) {
 			if (val && val.id) {
@@ -317,7 +319,7 @@ export default {
 			if (val.content) {
 				const tmIfr = document.getElementById('tm_ifr')
 		 if (tmIfr && tmIfr.contentWindow) {
-		 tmIfr.contentWindow.document.getElementById('tinymce').innerHTML = val.content
+					tmIfr.contentWindow.document.getElementById('tinymce').innerHTML = val.content || ''
 
 		 }
 
