@@ -73,7 +73,8 @@ export default {
 				return ''
 			}
 			const fileInfo = this.note.fileInfo.find((item) => item.is_eyecatch)
-			return fileInfo.userRef
+			if (!fileInfo) { return '' }
+			return fileInfo.userRef || ''
 		},
 	},
 	watch: {

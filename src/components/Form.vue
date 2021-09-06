@@ -41,7 +41,7 @@
 					<div>
 						<Editor
 							id="tm"
-							v-model="localNote.content"
+							v-model="editorContent"
 							:other_options="options" />
 					</div>
 					<div class="input__label">
@@ -91,7 +91,18 @@
 								</template>
 							</Multiselect>
 						</div>
-
+						<div class="input__label">
+							グループを選択
+						</div>
+						<div class="fixed__row">
+							<Multiselect
+								v-model="selectedGroups"
+								:multiple="true"
+								:options="user.gdata"
+								track-by="id"
+								:searchable="true"
+								label="name" />
+						</div>
 						<div class="fixed__row">
 							<div class="row__element">
 								<input
@@ -186,18 +197,19 @@ export default {
 		return {
 			localNote: {},
 			titleStr: '',
-			contentStr: '',
 			options: {
 				language: 'ja',
 				height: 400,
 			},
 			selectedCategory: {},
 			selectedTags: [],
+			selectedGroups: [],
 			fileDir: '',
 			selectedFile: null,
 			dirInfo: [],
 			contentWidth: 'w800',
 			iconScreenWidth: 'icon-fullscreen',
+			// editorContent: 'test',
 		}
 	},
 	computed: {
@@ -211,12 +223,18 @@ export default {
 		eyecatchFiles() {
 			return this.dirInfo.filter((file) => file.isEyecatch === '1')
 		},
-
+		editorContent: {
+			get() {
+				console.info('get')
+				return this.localNote.content
+			},
+			set(val) {
+				console.info('set')
+				this.$set(this.localNote, 'content', val)
+			},
+		},
 	},
 	watch: {
-		contentStr(val) {
-			this.$set(this.localNote, 'content', val)
-		},
 		note(val) {
 			this.initializeNote(val)
 			console.info('formupdated')
@@ -239,6 +257,7 @@ export default {
 				this.selectedCategory = {}
 				this.selectedTags = []
 				this.dirInfo = []
+				this.$emit('update:note', {})
 			} else {
 				this.initializeNote(this.note)
 			}
@@ -285,27 +304,46 @@ export default {
 			} else {
 				this.selectedTags = []
 			}
+			if (val.shareInfo) {
+				const shareInfo = JSON.parse(val.shareInfo)
+				const selectedGroups = shareInfo.map((el) => {
+					return this.user.gdata.find((group) => group.id === el.gid)
+				})
+				this.selectedGroups = selectedGroups
+			}
 			if (val.uuid && this.dialog) {
 				this.setDirInfo(`${this.user.id}/announce_${this.user.id}/${val.uuid}`)
 			} else { this.dirInfo = [] }
+			if (val.content) {
+				const tmIfr = document.getElementById('tm_ifr')
+		 if (tmIfr && tmIfr.contentWindow) {
+		 tmIfr.contentWindow.document.getElementById('tinymce').innerHTML = val.content
+
+		 }
+
+			}
 		},
 
 		saveNote() {
 			console.info(this.localNote)
-			Mymodules.saveNote(this.localNote)
-				.then((result) => {
+			this.shareFolder().then((shareInfo) => {
+				this.localNote.shareInfo = shareInfo
+				Mymodules.saveNote(this.localNote)
+					.then((result) => {
 
-					if (result.data && result.data.id) {
-						this.localNote.id = result.data.id
-						this.localNote = result.data
-						this.saveFilesInfo()
-						this.$emit('update:note', this.localNote)
-						this.$emit('update:dialog', false)
-					}
-				})
-				.catch((e) => {
-					console.error(e)
-				})
+						if (result.data && result.data.id) {
+							this.localNote.id = result.data.id
+							this.localNote = result.data
+							this.saveFilesInfo()
+							this.shareFolder()
+							this.$emit('update:note', this.localNote)
+							this.$emit('update:dialog', false)
+						}
+					})
+					.catch((e) => {
+						console.error(e)
+					})
+			})
 		},
 		saveFilesInfo() {
 			if (this.dirInfo.length) {
@@ -338,6 +376,70 @@ export default {
 				)
 
 			}
+		},
+		getShareInfo(path) {
+			 return axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares', { params: { path, reshares: true, subfiles: false } }).then((result) => {
+				const shareInfo = result?.data?.ocs?.data
+				return shareInfo
+			})
+
+		},
+		shareFolder() {
+			if (!this.user.id || !this.localNote.uuid) {
+				return
+			}
+			const path = `/announce_${this.user.id}/${this.localNote.uuid}`
+			const sharedGids = Mymodules.fetchDirInfoOrCreate(`${this.user.id}${path}`).then(() => {
+
+				return this.getShareInfo(path).then((shareInfo) => {
+					return shareInfo.filter((el) => el.share_type === 1).map((share) => { return { gid: share.share_with, shareId: share.id } })
+				})
+
+			})
+
+			if (!this.selectedGroups || !this.selectedGroups.length) {
+
+				// 現在のシェアを削除
+				// return
+			}
+
+			return sharedGids.then((shares) => {
+				const sharedGids = shares.map((share) => share.gid)
+				const selectedGids = this.selectedGroups.map((selected) => selected.id)
+				const unshares = shares.filter((share) => !selectedGids.includes(share.gid))
+
+				const promiseArray = this.selectedGroups.map((group) => {
+				// すでに共有されているIDリストgidにgroup.idが含まれていなければ新たに共有を作る
+					if (!sharedGids.includes(group.id)) {
+						const data = { path, shareType: 1, shareWith: group.id, publicUpload: 'false', permissions: 1 }
+						return axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+							const shareId = result?.data?.ocs?.data?.id
+							return { gid: group.id, shareId }
+						}).catch((e) => {
+							console.info('postErr')
+							console.info(e)
+							return { gid: '', shareId: '' }
+						})
+					} else {
+						return shares.find((share) => share.gid === group.id)
+					}
+				})
+				const promiseArray2 = unshares.map((unshare) => {
+					if (!unshare.shareId) { return {} }
+					return axios.delete(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${unshare.shareId}`).catch((e) => { console.info(e) })
+				})
+				Promise.all(promiseArray2).then((result) => {
+					console.info('unshareResult')
+					console.info(result)
+
+				})
+
+				return Promise.all(promiseArray).then((tmpArray) => {
+					return JSON.stringify(tmpArray)
+
+				})
+			})
+
 		},
 
 		closeDialog() {

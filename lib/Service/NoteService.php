@@ -32,21 +32,21 @@ class NoteService {
             $this->handleException($e);
         }
     }
-    public function filter(int $category,int $offset,int $limit,bool $pubFlag,bool $pinFlag,string $userId){
+    public function filter(int $category,int $offset,int $limit,bool $pubFlag,bool $pinFlag,array $userData,string $userId){
         try{
-            return $this->mapper->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userId);
+            return $this->mapper->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$userId);
         } catch(Exception $e){
             $this->handleException($e);
         }
     }
-    public function filtercount(int $category,bool $pubFlag,bool $pinFlag,string $userId){
+    public function filtercount(int $category,bool $pubFlag,bool $pinFlag,array $userData,string $userId){
         try{
-            return $this->mapper->filtercount($category,$pubFlag,$pinFlag,$userId);
+            return $this->mapper->filtercount($category,$pubFlag,$pinFlag,$userData,$userId);
         } catch(Exception $e){
             $this->handleException($e);
         }
     }
-    public function create(string $title,string $content,string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId){
+    public function create(string $title,string $content,string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo){
 
         $now = new DateTime();
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
@@ -63,9 +63,10 @@ class NoteService {
         $note->setUpdated($date);
         $note->setUuid($uuid);
         $note->setShareId($shareId);
+        $note->setShareInfo($shareInfo);
         return $this->mapper->insert($note);
     }
-    public function update(int $id,string $title, string $content, string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId){
+    public function update(int $id,string $title, string $content, string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo){
         try {
             $now = new DateTime();
             $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
@@ -81,6 +82,7 @@ class NoteService {
             $note->setUpdated($date);
             $note->setUuid($uuid);
             $note->setShareId($shareId);
+            $note->setShareInfo($shareInfo);
             return $this->mapper->update($note);
         } catch(Exception $e){
             $this->handleException($e);

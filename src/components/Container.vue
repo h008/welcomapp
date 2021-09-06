@@ -129,7 +129,7 @@ export default {
 			},
 		},
 		pinFilter() {
-			const tmpFilter = Object.assign({}, this.filter)
+			const tmpFilter = Object.assign({}, this.localFilter)
 			return Object.assign(tmpFilter, { pinFlag: true })
 		},
 		localFilter: {
@@ -188,9 +188,6 @@ export default {
 					}
 				}
 			}
-			// axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${this.user.shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result3) => {
-			// console.info(result3)
-			// })
 		},
 		dialog(val) {
 			if (val) {
@@ -301,6 +298,7 @@ export default {
 
 		},
 		fetchShareInfo() {
+			console.info('here')
 			if (this.localCurrentNote.shareId) {
 			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${this.localCurrentNote.shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
 
@@ -308,9 +306,6 @@ export default {
 			 return this.userDir
 			 })
 			 }
-
-		},
-		fetchFileDetail(file) {
 
 		},
 	},

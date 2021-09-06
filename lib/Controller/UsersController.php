@@ -135,8 +135,14 @@ class UsersController extends Controller
 		$userAccount = $this->accountManager->getAccount($targetUserObject);
 		$groups=$this->groupManager->getUserGroups($targetUserObject);
 		$gids=[];
+		$groupData=[];
 		foreach($groups as $group) {
-			$gids[]=$group->getGID();
+			$obj["id"]=$group->getGID();
+			$obj["name"]=$group->getDisplayName();
+			$gids[]=$obj["id"];
+			$gdata[]=$obj;
+			
+
 		}
 		$data['id']=$targetUserObject->getUID();
 		try{
@@ -155,6 +161,7 @@ class UsersController extends Controller
 			throw new OCSException($e->getMessage(),Http::STATUS_INTERNAL_SERVER_ERROR,$e);
 		}
 		$data['groups']=$gids;
+		$data['gdata']=$gdata;
 		return $data;
 		
 	}

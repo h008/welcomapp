@@ -27,7 +27,6 @@ class ConfigController extends Controller
 		$this->service = $service;
 		$this->userId = $userId;
 	}
-
 	/**
 	 * @NoAdminRequired
 	 */

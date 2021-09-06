@@ -15,6 +15,7 @@ class Note extends Entity implements JsonSerializable {
     protected $tags;
     protected $uuid;
     protected $shareId;
+    protected $shareInfo;
 
     public function __construct() {
         $this->addType('id','integer');
@@ -34,6 +35,7 @@ class Note extends Entity implements JsonSerializable {
             'tags'=>$this->tags,
             'uuid'=>$this->uuid,
             'shareId'=>$this->shareId,
+            'shareInfo'=>$this->shareInfo,
         ];
     }
     

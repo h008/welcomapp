@@ -196,6 +196,9 @@ class Version000001Date20210806000000 extends SimpleMigrationStep {
             $table->addColumn('share_id','integer',['notnull'=>false]);
 
         }
+        if(!$table->hasColumn('share_info')){
+            $table->addColumn('share_info','string',['notnull'=>false]);
+        }
         return $schema;
     }
 }

@@ -53,7 +53,12 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filter(int $category, int $offset,int $limit,bool $pubFlag,bool $pinFlag,string $userId): array {
+	public function filter(int $category, int $offset,int $limit,bool $pubFlag,bool $pinFlag,array $userData,string $userId): array {
+		/* @var $qb1 IQueryBuilder */
+		 //$qb1= $this->db->getQueryBuilder();
+ //$qb1->select('*')
+		// 	->from('group_user');
+		// $this->findEntities($qb1);
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
@@ -77,11 +82,21 @@ class NoteMapper extends QBMapper {
 		if($pinFlag){
 			$qb->andWhere($qb->expr()->eq('pin_flag',$qb->createNamedParameter($pinFlag,IQueryBuilder::PARAM_INT)));
 		}
+
 		if($limit){
 			$qb->setMaxResults($limit);
 		}
 		if($offset){
 			$qb->setFirstResult($offset);
+		}
+		if($userData && $userData['groups'] && count($userData['groups'])>0){
+			$groups=$userData['groups'];
+			$orX = $qb->expr()->orX();
+			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
+			foreach($groups as $groupId ) {
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
+			}
+			$qb->andWhere($orX);
 		}
 
 		return $this->findEntities($qb);
@@ -92,7 +107,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filtercount(int $category,bool $pubFlag,bool $pinFlag,string $userId): int {
+	public function filtercount(int $category,bool $pubFlag,bool $pinFlag,array $userData ,string $userId): int {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
@@ -112,6 +127,15 @@ class NoteMapper extends QBMapper {
 		}
 		if($pinFlag){
 			$qb->andWhere($qb->expr()->eq('pin_flag',$qb->createNamedParameter($pinFlag,IQueryBuilder::PARAM_INT)));
+		}
+		if($userData && $userData['groups'] && count($userData['groups'])>0){
+			$groups=$userData['groups'];
+			$orX = $qb->expr()->orX();
+			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
+			foreach($groups as $groupId ) {
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
+			}
+			$qb->andWhere($orX);
 		}
 		//$count =$this-db->excuteQuery($qb);
 		//return $count;

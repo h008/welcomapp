@@ -137,28 +137,20 @@ export default {
 	 * @param {string} path string
 	 */
 	fetchDirInfoOrCreate: async (path) => {
-		return fetchDirList(path).then((result) => {
-			if (result.status === 404) {
-				console.info('404error')
+		return checkDirExist(path).then((exist) => {
+
+			if (exist) {
+				return fetchDirList(path).catch((e) => { return e })
+			} else {
 				return createDir(path).then((crResult) => {
 					if (crResult.status === 201) {
-						return fetchDirList(path)
+						return fetchDirList(path).catch((e) => { return e })
+					} else {
+						return crResult
 					}
-					return crResult
-
-				}).catch((e) => {
-					console.info(e)
-					if (e.response) {
-						return e.response
-					}
-					return e
-				})
-			} else {
-				return result
-
+				}).catch((e) => { return e })
 			}
-		})
-
+		}).catch((e) => { return e })
 	},
 	/**
 	 * Update an existing note on the server
@@ -166,7 +158,14 @@ export default {
 	 * @param {string} path string
 	 */
 	fetchDirInfo: async (path) => {
-		return fetchDirList(path)
+		return checkDirExist(path).then((exist) => {
+			if (exist) {
+				return fetchDirList(path)
+
+			} else {
+				return Promise.resolve([])
+			}
+		})
 
 	},
 	removeFile(file) {
@@ -294,7 +293,12 @@ export default {
 		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: true, pinFlag: false }
 		const filter = { ...defFilter, ...propFilter }
 
-		const dataP = axios.get(generateUrl('/apps/welcomapp/filter'), { params: filter }).then((result) => {
+		const dataP = axios.get(generateUrl('/apps/welcomapp/filter'), {
+			params: filter,
+			// paramsSerializer: () => {
+			// return transformRequestOptions(filter)
+			// },
+		}).then((result) => {
 			let data = result.data
 			if (!data || !data.length) {
 				return Promise.resolve([])
@@ -349,9 +353,29 @@ export default {
 		})
 
 	},
+	checkDir(path) {
+		return checkDirExist(path)
+	},
 
 }
 
+// const transformRequestOptions = (params) => {
+// let options = ''
+// for (const key in params) {
+// if (typeof params[key] !== 'object') {
+// options += `${key}=${params[key]}&`
+// } else if (typeof params[key] === 'object') {
+// const value = JSON.stringify(params[key])
+// options += `${key}=${value}&`
+// } else {
+// console.info(key)
+// console.info(typeof params[key])
+// console.info(params[key])
+// }
+// }
+// return options ? options.slice(0, -1) : options
+
+// }
 /**
  * Update an existing note on the server
  *
@@ -393,6 +417,51 @@ const parseXml = (xml) => {
 	})
 
 	return result
+}
+const checkDirExist = async (path) => {
+	const href = path.split('/')
+	const displayName = href.pop()
+	const hrefStr = href.join('/')
+	const testData = `<?xml version="1.0" encoding="UTF-8"?>
+ <d:searchrequest xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
+     <d:basicsearch>
+         <d:select>
+             <d:prop>
+                 <oc:fileid/>
+                 <d:getetag/>
+             </d:prop>
+         </d:select>
+         <d:from>
+             <d:scope>
+                 <d:href>/files/${hrefStr}</d:href>
+                 <d:depth>infinity</d:depth>
+             </d:scope>
+         </d:from>
+         <d:where>
+             <d:eq>
+                 <d:prop>
+                     <d:displayname/>
+                 </d:prop>
+                 <d:literal>${displayName}</d:literal>
+             </d:eq>
+         </d:where>
+         <d:orderby/>
+    </d:basicsearch>
+</d:searchrequest>`
+
+	return axios.request({ url: '/remote.php/dav/', data: testData, method: 'SEARCH', headers: { 'content-Type': 'text/xml' } }).then((result) => {
+		const parser = new DOMParser()
+		const dom = parser.parseFromString(result.data, 'text/xml')
+		let response = dom.getElementsByTagName('d:multistatus')[0]?.getElementsByTagName('d:response')[0]?.getElementsByTagName('d:href')[0]?.textContent
+		if (!response) { return false }
+		response = response.replace(/^\/remote.php\/dav\/files\//, '').replace(/\/$/, '')
+		return (response === path)
+	}).catch((e) => {
+		console.info('searchEror')
+		console.info(e)
+		return false
+	})
+
 }
 /**
  * Update an existing note on the server

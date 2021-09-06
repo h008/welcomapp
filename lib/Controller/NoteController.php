@@ -8,10 +8,23 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
+
+use OCP\AppFramework\OCS\OCSException;
+use OCP\AppFramework\OCS\OCSNotFoundException;
+use OCP\Accounts\IAccountManager;
+use OCP\IUserManager;
+use OCP\IGroupManager;
+
 class NoteController extends Controller
 {
 	/** @var NoteService */
 	private $service;
+	/** @var IUserManager */
+	protected $userManager;
+	/** @var IGroupManager */
+	protected $groupManager;
+	/** @var IAccountManager */
+	protected $accountManager;
 
 	/** @var string */
 	private $userId;
@@ -21,11 +34,17 @@ class NoteController extends Controller
 	public function __construct(
 		IRequest $request,
 		NoteService $service,
+		IGroupManager $groupManager,
+		IUserManager $userManager,
+		IAccountManager $accountManager,
 		$userId
 	) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
+		$this->groupManager=$groupManager;
+		$this->userManager=$userManager;
+		$this->accountManager=$accountManager;
 	}
 
 	/**
@@ -50,8 +69,9 @@ class NoteController extends Controller
 	 */
 	public function filter(int $category,int $offset ,int $limit,bool $pubFlag,bool $pinFlag): DataResponse
 	{
-		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag) {
-			return $this->service->filter($category,$offset,$limit,$pubFlag,$pinFlag,$this->userId);
+$userData=$this->getUserData($this->userId);
+		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag,$userData) {
+			return $this->service->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$this->userId);
 		});
 	}
 	/**
@@ -59,15 +79,16 @@ class NoteController extends Controller
 	 */
 	public function filtercount(int $category,bool $pubFlag,bool $pinFlag)
 	{
-		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag) {
-			return $this->service->filtercount($category,$pubFlag,$pinFlag,$this->userId);
+$userData=$this->getUserData($this->userId);
+		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag,$userData) {
+			return $this->service->filtercount($category,$pubFlag,$pinFlag,$userData,$this->userId);
 		});
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId ): DataResponse
+	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo ): DataResponse
 	{
 		return new DataResponse($this->service->create(
 			$title,
@@ -78,7 +99,8 @@ class NoteController extends Controller
 			$pubFlag,
 			$tags,
 			$uuid,
-			$shareId
+			$shareId,
+			$shareInfo
 		));
 	}
 
@@ -94,10 +116,11 @@ class NoteController extends Controller
 		bool $pubFlag,
 		string $tags,
 		string $uuid,
-		int $shareId
+		int $shareId,
+		string $shareInfo
 	): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId) {
-			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId);
+		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId,$shareInfo) {
+			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId,$shareInfo);
 		});
 	}
 
@@ -109,5 +132,30 @@ class NoteController extends Controller
 		return $this->handleNotFound(function () use ($id) {
 			return $this->service->delete($id, $this->userId);
 		});
+	}
+	/**
+	 * @NoAdminRequired
+	 * @param string $userId
+	 * @return aray
+	 * @throws NotFoundException
+	 * @throws OCSException
+	 * @throws OCSNotFoundException
+	 */
+	protected function getUserData(string $userId){
+		$data=[];
+		$targetUserObject = $this->userManager->get($userId);
+		if($targetUserObject === null){
+			throw new OCSNotFoundException('User does not exist');
+		}
+		$userAccount = $this->accountManager->getAccount($targetUserObject);
+		$groups=$this->groupManager->getUserGroups($targetUserObject);
+		$gids=[];
+		foreach($groups as $group) {
+			$gids[]=$group->getGID();
+		}
+		$data['id']=$targetUserObject->getUID();
+		$data['groups']=$gids;
+		return $data;
+		
 	}
 }
