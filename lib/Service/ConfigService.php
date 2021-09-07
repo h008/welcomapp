@@ -18,7 +18,7 @@ class ConfigService {
     }
     private function handleException($e){
         if($e instanceof DoesNotExistException ||
-        $e instanceof MultipleObjectReturnedException){
+        $e instanceof MultipleObjectsReturnedException){
             throw new NotFoundException($e->getMessage());
         } else {
             throw $e;
