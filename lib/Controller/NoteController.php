@@ -88,7 +88,7 @@ $userData=$this->getUserData($this->userId);
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo ): DataResponse
+	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
 	{
 		return new DataResponse($this->service->create(
 			$title,
@@ -99,7 +99,6 @@ $userData=$this->getUserData($this->userId);
 			$pubFlag,
 			$tags,
 			$uuid,
-			$shareId,
 			$shareInfo
 		));
 	}
@@ -116,11 +115,10 @@ $userData=$this->getUserData($this->userId);
 		bool $pubFlag,
 		string $tags,
 		string $uuid,
-		int $shareId,
 		string $shareInfo
 	): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId,$shareInfo) {
-			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareId,$shareInfo);
+		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareInfo) {
+			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareInfo);
 		});
 	}
 

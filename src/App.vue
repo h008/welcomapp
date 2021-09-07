@@ -187,10 +187,10 @@ export default {
 				this.user = result.data
 				if (this.user.id) {
 
+					/*
 					if (this.user.groups.includes('announce')) {
 						console.info(this.user)
 						Mymodules.fetchDirInfoOrCreate(`${this.user.id}/announce_${this.user.id}`).then(() => {
-							const data = { path: `/announce_${this.user.id}`, shareType: 1, shareWith: 'all_users', publicUpload: 'false', permissions: 1 }
 							 axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result2) => {
 								const shareId = result2?.data?.ocs?.data?.id
 								if (shareId) {
@@ -213,9 +213,9 @@ export default {
 
 								})
 		 })
-
 		 })
 					}
+*/
 					this.fetchHeader()
 				}
 			}).catch((e) => console.error(e))
@@ -245,40 +245,6 @@ export default {
 					this.headerConfig = result
 				})
 
-			}
-			try {
-				 axios.get(generateUrl('/apps/welcomapp/getconfig/header')).then((result) => {
-					if (result.data && result.data.length) {
-
-						const tmpData = result.data[0]
-						console.info(tmpData)
-						if (tmpData.value) {
-							let s = tmpData.value
-							// preserve newlines, etc - use valid JSON
-							s = s.replace(/\\n/g, '\\n')
-								.replace(/\\'/g, "\\'")
-								.replace(/\\"/g, '\\"')
-								.replace(/\\&/g, '\\&')
-								.replace(/\\r/g, '\\r')
-								.replace(/\\t/g, '\\t')
-								.replace(/\\b/g, '\\b')
-								.replace(/\\f/g, '\\f')
-
-							// remove non-printable and other non-valid JSON chars
-							// s = s.replace(/[\u0000-\u0019]+/g, '')
-							tmpData.value = JSON.parse(s)
-						}
-						return tmpData
-					} else {
-						return {}
-					}
-				}).then((data) => {
-					// this.headerConfig = data
-					console.info(data)
-				})
-
-			} catch (e) {
-				showError('Could not fetch Header')
 			}
 		},
 		/**

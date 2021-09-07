@@ -44,36 +44,13 @@ export default {
 	 * @param {object} note Note object
 	 */
 	deleteNote: async (note) => {
-
-		try {
-			await axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
-			return note
-		} catch (e) {
+		console.info('deleteNote')
+		 removeAttachedFiles(note).then(() => {
+			 axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
+		}).catch((e) => {
 			console.error(e)
 			showError(t('welcomapp', 'Could not delete'))
-		}
-	},
-	removeAttachedFiles: (note) => {
-		if (!note.shareId || !note.uuid) { return false }
-			 axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${note.shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
-
-			 const dir = result?.data?.ocs?.data[0]?.file_target
-			if (dir) {
-				const path = `${note.userId}${dir}/${note.uuid}`
-				const dirInfo = fetchDirList(path)
-				dirInfo.forEach((file) => {
-					this.removeFile(file)
-				})
-				axios.get(generateUrl(`/apps/welcomapp/getfiles/${this.localCurrentNote.uuid}`)).then((result) => {
-					if (result.data) {
-						result.data.forEach((file) => {
-							this.removeDataOfFile(file.id)
-						})
-					}
-				})
-			 }
 		})
-
 	},
 	/**
 	 * Action tiggered when clicking the save button
@@ -163,14 +140,15 @@ export default {
 				return fetchDirList(path)
 
 			} else {
-				return Promise.resolve([])
+				// return Promise.resolve([])
+				return fetchDirList(path)
 			}
 		})
 
 	},
 	removeFile(file) {
-		axios.delete(file.href).then(() => {
-			this.removeDataOfFile(file.fileId)
+		return axios.delete(file.href).then(() => {
+			return this.removeDataOfFile(file.fileId)
 
 		})
 	},
@@ -184,11 +162,24 @@ export default {
 			return userInfo.data
 		})
 	},
+	shareDirToGroup(path, gid) {
+		if (!path || !gid) {
+			return
+		}
+		const data = { path, shareType: 1, shareWith: gid, publicUpload: 'false', permissions: 1 }
+		return axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+			const shareId = result?.data?.ocs?.data?.id
+			return shareId
+		})
+
+	},
 	fetchShareInfo(shareId) {
 		if (!shareId) { return '' }
 			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
-
-			 return result?.data?.ocs?.data[0]?.file_target
+			console.info('fetchShareInfo')
+				 console.info(result.data.ocs.data[0])
+			 // return result?.data?.ocs?.data[0]?.file_target
+			 return result?.data?.ocs?.data[0]?.path
 			 })
 
 	},
@@ -215,10 +206,16 @@ export default {
 					tmpData.value = value
 					if (value.shareId) {
 						return this.fetchShareInfo(value.shareId).then((userDir) => {
-							const headerDir = `${userId}${userDir}/headers`
+							const headerDir = `${userId}${userDir}`
+							console.info('headerDir')
+							console.info(headerDir)
 							return this.fetchDirInfo(headerDir).then((dirInfo) => {
+								console.info('dirInfo')
+								console.info(dirInfo)
 								const regex = /image/
 								const headerDirInfo = dirInfo.filter((element) => regex.test(element.filetype)).map((file) => file.href)
+								console.info('headerDirInfo')
+								console.info(headerDirInfo)
 								tmpData.images = headerDirInfo
 								return tmpData
 							})
@@ -246,7 +243,7 @@ export default {
 					elem.userRef = generateUrl(`/f/${elem.id}`)
 
 				} else {
-					elem.userRef = `/remote.php/dav/files/${userId}${userDir}/${elem.fileurl}/${elem.filename}`
+					elem.userRef = `/remote.php/dav/files/${userId}${userDir}/${elem.filename}`
 				}
 				return elem
 			})
@@ -288,10 +285,12 @@ export default {
 		}
 		return { fileInfo, dirInfo }
 	},
-
-	fetchNotes(userId, propFilter) {
+	// TODO
+	fetchNotes(user, propFilter) {
 		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: true, pinFlag: false }
 		const filter = { ...defFilter, ...propFilter }
+		const userId = user.id
+		const userGroups = user.groups
 
 		const dataP = axios.get(generateUrl('/apps/welcomapp/filter'), {
 			params: filter,
@@ -304,22 +303,33 @@ export default {
 				return Promise.resolve([])
 
 			}
+			// TODO
 			 data = data.map((note) => {
-				if (note.userId && note.shareId) {
+				 if (note.userId && note.shareInfo) {
+					 const shareInfos = JSON.parse(note.shareInfo)
+					const shareId = shareInfos.filter((shareInfo) => userGroups.includes(shareInfo.gid)).map((share) => share.shareId)[0]
+					 if (!shareId) { return {} }
+
 					const userInfoP = this.autherInfo(note.userId)
-					const userDirP = this.fetchShareInfo(note.shareId)
+
+					const userDirP = this.fetchShareInfo(shareId)
 					return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
 						note.userInfo = userInfo
 						note.userDir = userDir
 				 if (note.content) {
-					 const beforeStr = `/${note.userId}/announce_${note.userId}`
-					 const afterStr = `/${userId}${userDir}`
-							note.content = note.content.replace(beforeStr, afterStr)
+					 // TODO
+							const targetStr = note.content
+							const beforeStr = `/${note.userId}/.announce_${note.uuid}`
+							const afterStr = `/${userId}${userDir}`
+							const reg = new RegExp(beforeStr, 'g')
+							note.content = targetStr.replace(reg, afterStr)
 				 }
 						if (userId && userDir && note.uuid) {
-							const path = `${userId}${userDir}/${note.uuid}`
+							const path = `${userId}${userDir}`
 							const dirInfo = this.fetchDirInfo(path)
+							console.info(dirInfo)
 							const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
+							console.info(fileInfo)
 							return Promise.all([fileInfo, dirInfo]).then((array) => {
 								const checked = this.compareFileInfo(array, note)
 								note.fileInfo = checked.fileInfo
@@ -356,6 +366,24 @@ export default {
 	checkDir(path) {
 		return checkDirExist(path)
 	},
+	fetchShareDir(shareInfoStr, user) {
+		console.info('here')
+		if (shareInfoStr) {
+			const shareInfo = JSON.parse(shareInfoStr)
+			if (!shareInfo.length) {
+				console.info(shareInfo)
+
+			}
+			if (!user.groups?.length) { return '' }
+			const shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]
+
+			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+
+			 return result?.data?.ocs?.data[0]?.file_target
+			 })
+			 }
+
+	},
 
 }
 
@@ -376,6 +404,46 @@ export default {
 // return options ? options.slice(0, -1) : options
 
 // }
+/**
+ * Delete a note, remove it from the frontend and show a hint
+ *
+ * @param {object} note Note object
+ */
+
+const removeAttachedFiles = (note) => {
+	console.info('remove')
+	console.info(note)
+	if (!note.shareInfo || !note.uuid) { return false }
+	console.info(note.shareInfo)
+
+	const shareInfo = JSON.parse(note.shareInfo)
+		   const shareId = shareInfo[0].shareId
+	console.info(shareId)
+	return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+
+			 const dir = result?.data?.ocs?.data[0]?.file_target
+		if (dir) {
+			const promises = []
+			const path = `${note.userId}${dir}`
+			return axios.delete(`/remote.php/dav/files/${path}`).then(() => {
+
+				return axios.get(generateUrl(`/apps/welcomapp/getfiles/${note.uuid}`)).then((result) => {
+					if (result.data) {
+						result.data.forEach((file) => {
+							promises.push(axios.delete(generateUrl(`/apps/welcomapp/files/${file.id}`)))
+						})
+						return Promise.all(promises)
+					} else { return Promise.resolve() }
+				})
+
+			})
+
+			 } else {
+			return Promise.resolve()
+		}
+	})
+
+}
 /**
  * Update an existing note on the server
  *

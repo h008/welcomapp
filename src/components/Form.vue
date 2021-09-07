@@ -314,7 +314,7 @@ export default {
 				this.selectedGroups = selectedGroups
 			}
 			if (val.uuid && this.dialog) {
-				this.setDirInfo(`${this.user.id}/announce_${this.user.id}/${val.uuid}`)
+				this.setDirInfo(`${this.user.id}/.announce_${val.uuid}`)
 			} else { this.dirInfo = [] }
 			if (val.content) {
 				const tmIfr = document.getElementById('tm_ifr')
@@ -390,7 +390,7 @@ export default {
 			if (!this.user.id || !this.localNote.uuid) {
 				return
 			}
-			const path = `/announce_${this.user.id}/${this.localNote.uuid}`
+			const path = `/.announce_${this.localNote.uuid}`
 			const sharedGids = Mymodules.fetchDirInfoOrCreate(`${this.user.id}${path}`).then(() => {
 
 				return this.getShareInfo(path).then((shareInfo) => {
@@ -476,8 +476,8 @@ export default {
 
 			if (this.selectedFile) {
 				if (this.user.id && this.note.uuid) {
-					const path = `${this.user.id}/announce_${this.user.id}/${this.note.uuid}`
-					Mymodules.fetchDirInfoOrCreate(path).then((result) => {
+					const path = `${this.user.id}/.announce_${this.note.uuid}`
+					Mymodules.fetchDirInfo(path).then((result) => {
 						this.fileDir = path
 						axios.put(`/remote.php/dav/files/${path}/${this.selectedFile.name}`, this.selectedFile).then((result) => {
 							if (result.status === 201 || result.status === 204) {

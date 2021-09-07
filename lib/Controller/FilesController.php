@@ -56,7 +56,7 @@ class FilesController extends Controller
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(int $id,int $announceId, string $filename,string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview ,string $updated,int $size,int $shareId): DataResponse
+	public function create(int $id,int $announceId, string $filename,string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview ,string $updated,int $size): DataResponse
 	{
 		return new DataResponse($this->service->create(
 			$id,
@@ -69,7 +69,6 @@ class FilesController extends Controller
 			$hasPreview,
 			$updated,
 			$size,
-			$shareId,
 			$this->userId
 		));
 	}
@@ -88,12 +87,11 @@ class FilesController extends Controller
 		bool $hasPreview,
 		string $updated,
 		int $size,
-		int $shareId
 
 
 	): DataResponse {
-		return $this->handleNotFound(function () use ($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$shareId) {
-			return $this->service->update($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$shareId,$this->userId);
+		return $this->handleNotFound(function () use ($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size) {
+			return $this->service->update($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$this->userId);
 		});
 	}
 

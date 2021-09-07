@@ -152,7 +152,7 @@ export default {
 		},
 		fetchNotes() {
 			this.loading = true
-			Modules.fetchNotes(this.user.id, this.filter).then((result) => {
+			Modules.fetchNotes(this.user, this.filter).then((result) => {
 				this.localListItem = result.data
 				this.totalNotesNumber = result.total
 				this.loading = false

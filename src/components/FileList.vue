@@ -29,7 +29,7 @@
 </template>
 <script>
 import dayjs from 'dayjs'
-import axios from '@nextcloud/axios'
+// import axios from '@nextcloud/axios'
 import ListItem from '@nextcloud/vue/dist/Components/ListItem'
 import Avatar from '@nextcloud/vue/dist/Components/Avatar'
 import ActionLink from '@nextcloud/vue/dist/Components/ActionLink'
@@ -59,11 +59,11 @@ export default {
 		},
 		downloadFile(fileId) {
 			// return generateUrl(`/f/${fileId}`)
-			const data = { fileId }
+			// const data = { fileId }
 
-			axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares/6', data, { headers: { 'OCS-APIRequest': true } }).then((result) => {
-			  console.info(result.data.ocs.data)
-			  })
+			// axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares/6', data, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+			  // console.info(result.data.ocs.data)
+			  // })
 			return generateUrl(`/f/${fileId}`)
 		},
 		openItem(file) {

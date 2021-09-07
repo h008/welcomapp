@@ -92,6 +92,7 @@
 			<div>
 				<input type="button" value="保存" @click="saveConfig">
 			</div>
+			{{ headerConfig }}
 		</div>
 	</div>
 </template>
@@ -136,6 +137,7 @@ export default {
 			visible_content: 0,
 			selectedFile: null,
 			dirInfo: [],
+			shareId: 0,
 		}
 	},
 	mounted() {
@@ -156,8 +158,12 @@ export default {
 	methods: {
 		fetchDirInfo() {
 			if (!this.user.id) { return }
-			this.fileDir = `${this.user.id}/announce_${this.user.id}/headers`
+			const path = `/.announce_${this.user.id}_headers`
+			this.fileDir = `${this.user.id}${path}`
 			Mymodules.fetchDirInfoOrCreate(this.fileDir).then((dirInfo) => {
+				Mymodules.shareDirToGroup(path, 'all_users').then((shareId) => {
+					this.shareId = shareId
+				})
 				const regex = /image/
 				this.dirInfo = dirInfo.filter((elm) => regex.test(elm.filetype))
 			})
@@ -224,7 +230,7 @@ export default {
 				subTitle: this.subTitle,
 				messageTxt: this.messageTxt,
 				color: this.color,
-				shareId: this.user.shareId,
+				shareId: this.shareId,
 			}
 			const data = {
 				kind: 'header',

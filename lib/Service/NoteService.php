@@ -46,7 +46,7 @@ class NoteService {
             $this->handleException($e);
         }
     }
-    public function create(string $title,string $content,string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo){
+    public function create(string $title,string $content,string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo){
 
         $now = new DateTime();
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
@@ -62,11 +62,10 @@ class NoteService {
         $note->setCreated($date);
         $note->setUpdated($date);
         $note->setUuid($uuid);
-        $note->setShareId($shareId);
         $note->setShareInfo($shareInfo);
         return $this->mapper->insert($note);
     }
-    public function update(int $id,string $title, string $content, string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,int $shareId,string $shareInfo){
+    public function update(int $id,string $title, string $content, string $userId,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo){
         try {
             $now = new DateTime();
             $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
@@ -81,7 +80,6 @@ class NoteService {
             $note->setTags($tags);
             $note->setUpdated($date);
             $note->setUuid($uuid);
-            $note->setShareId($shareId);
             $note->setShareInfo($shareInfo);
             return $this->mapper->update($note);
         } catch(Exception $e){

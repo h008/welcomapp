@@ -40,7 +40,7 @@ class FilesService {
             $this->handleException($e);
         }
     }
-    public function create(int $id,int $announceId,string $filename,string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,int $shareId,string $userId){
+    public function create(int $id,int $announceId,string $filename,string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,string $userId){
         $now = new DateTime($updated);
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
         $date = $now->format('Y-m-d H:i:s');
@@ -64,7 +64,6 @@ class FilesService {
         $files->setUpdated($date);
         $files->setUserId($userId);
         $files->setSize($size);
-        $files->setShareId($shareId);
         try {
             if($flag){
                 return $this->mapper->update($files);
@@ -75,7 +74,7 @@ class FilesService {
             $this->handleException($e);
         }
     }
-    public function update(int $id,int $announceId,string $filename, string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,int $shareId,string $userId){
+    public function update(int $id,int $announceId,string $filename, string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,string $userId){
         $now = new DateTime($updated);
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
         $date = $now->format('Y-m-d H:i:s');
@@ -90,7 +89,6 @@ class FilesService {
             $files->setHasPreview($hasPreview);
             $files->setUpdated($date);
             $files->setSize($size);
-            $files->setShareId($shareId);
             $files->setUserId($userId);
             return $this->mapper->update($files);
         } catch(Exception $e){

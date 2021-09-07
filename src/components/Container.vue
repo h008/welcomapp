@@ -160,7 +160,8 @@ export default {
 
 				if (value.userId && value.uuid) {
 					this.fetchAutherInfo(value.userId)
-					this.fetchShareInfo().then(() => {
+					this.fetchShareInfo(value.shareInfo, this.user).then((userDir) => {
+			 this.userDir = userDir
 
 						// this.fetchDirInfo()
 						const fileInfo = this.fetchFileInfo()
@@ -173,6 +174,8 @@ export default {
 				}
 
 				if (this.currentNote.id === -1) {
+					const path = `${this.user.id}/.announce_${value.uuid}`
+					Mymodules.fetchDirInfoOrCreate(path)
 					this.dialog = true
 				} else {
 
@@ -193,6 +196,10 @@ export default {
 			if (val) {
 				emit('toggle-navigation', { open: false })
 				return
+			}
+			if (!val && this.currentNote.id === -1 && this.currentNote.uuid) {
+				const path = `${this.user.id}/.announce_${this.currentNote.uuid}`
+				axios.delete(`/remote.php/dav/files/${path}`)
 			}
 			if (!this.currentNote || !this.currentNote.id || this.currentNote.id < 1) {
 				const tmpArray = this.notes.filter((note) => note.id > 0)
@@ -218,7 +225,7 @@ export default {
 
 			} else {
 
-				const path = `${this.user.id}${this.userDir}/${this.localCurrentNote.uuid}`
+				const path = `${this.user.id}${this.userDir}`
 
 				// const path = `${this.localCurrentNote.userId}/announce/${this.localCurrentNote.uuid}`
 				return Mymodules.fetchDirInfo(path).then((result) => {
@@ -237,7 +244,8 @@ export default {
 							elem.userRef = generateUrl(`/f/${elem.id}`)
 
 						} else {
-							elem.userRef = `/remote.php/dav/files/${this.user.id}${this.userDir}/${elem.fileurl}/${elem.filename}`
+							// TODO
+							elem.userRef = `/remote.php/dav/files/${this.user.id}${this.userDir}/${elem.filename}`
 						}
 						// axios.get(elem.userRef).then((result) => {
 						// elem.refcheck = result.data
@@ -297,13 +305,20 @@ export default {
 			// this.$emit('update:currentNote', Object.assign({}, tmpNote))
 
 		},
-		fetchShareInfo() {
+		fetchShareInfo(shareInfoStr, user) {
 			console.info('here')
-			if (this.localCurrentNote.shareId) {
-			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${this.localCurrentNote.shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+			if (shareInfoStr) {
+				const shareInfo = JSON.parse(shareInfoStr)
+				if (!shareInfo.length) {
+					console.info(shareInfo)
 
-			 this.userDir = result?.data?.ocs?.data[0]?.file_target
-			 return this.userDir
+				}
+				if (!user.groups?.length) { return '' }
+				const shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]
+
+			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+
+			 return result?.data?.ocs?.data[0]?.file_target
 			 })
 			 }
 

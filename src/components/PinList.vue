@@ -86,7 +86,7 @@ export default {
 	methods: {
 		init() {
 			this.loading = true
-			 Modules.fetchNotes(this.user.id, this.filter).then((data) => {
+			 Modules.fetchNotes(this.user, this.filter).then((data) => {
 				const localList = data.data
 				this.localList = localList
 				this.itemNumber = data.total
