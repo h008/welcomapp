@@ -164,11 +164,14 @@ export default {
 			 this.userDir = userDir
 
 						// this.fetchDirInfo()
-						const fileInfo = this.fetchFileInfo()
-						const dirInfo = this.fetchDirInfo()
-						Promise.all([fileInfo, dirInfo]).then((fileListArray) => {
-							this.compareFileInfo(fileListArray)
-						})
+						if (value.id !== -1) {
+
+							const fileInfo = this.fetchFileInfo()
+							const dirInfo = this.fetchDirInfo()
+							Promise.all([fileInfo, dirInfo]).then((fileListArray) => {
+								this.compareFileInfo(fileListArray)
+							})
+						}
 					})
 
 				}
