@@ -8,6 +8,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
+use OCP\AppFramework\Http;
 class FilesController extends Controller
 {
 	/** @var FilesService */
@@ -50,7 +51,9 @@ class FilesController extends Controller
 	 */
 	public function showByAid(string $fileurl): DataResponse
 	{
+		return $this->handleNotFound(function () use ($fileurl) {
 			return new DataResponse($this->service->findByAid($fileurl));
+		});
 	}
 
 	/**
