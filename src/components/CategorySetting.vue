@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="category__setting">
 		<CategoryList :categories.sync="localCategories" />
 		<CategoryForm :category="{id:-1,category_name:'',category_order:99,color:''}" :categories.sync="localCategories" />
 	</div>
@@ -30,3 +30,8 @@ export default {
 	},
 }
 </script>
+<style scoped>
+.category__setting{
+	padding:30px;
+}
+</style>

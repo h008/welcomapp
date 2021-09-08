@@ -437,7 +437,7 @@ const removeAttachedFiles = (note) => {
 			return axios.delete(`/remote.php/dav/files/${path}`).then(() => {
 
 				return axios.get(generateUrl(`/apps/welcomapp/getfiles/${note.uuid}`)).then((result) => {
-					if (result.data) {
+					if (result.data && result.data.length) {
 						result.data.forEach((file) => {
 							promises.push(axios.delete(generateUrl(`/apps/welcomapp/files/${file.id}`)))
 						})

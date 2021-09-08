@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="tag__setting">
 		<TagList :tags.sync="localTags" />
 		<TagForm :tag="{id:-1,tag_name:'',tag_order:99,color:''}" :tags.sync="localTags" />
 	</div>
@@ -30,3 +30,8 @@ export default {
 	},
 }
 </script>
+<style scoped>
+.tag__setting{
+	padding:30px;
+}
+</style>

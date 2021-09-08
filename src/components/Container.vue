@@ -241,7 +241,7 @@ export default {
 			if (this.localCurrentNote.uuid) {
 				return axios.get(generateUrl(`/apps/welcomapp/getfiles/${this.localCurrentNote.uuid}`)).then((result) => {
 					this.localCurrentNote.fileTarget = this.userDir
-					if(!result ||!result.data||!result.data.length){
+					if (!result || !result.data || !result.data.length) {
 						return []
 					}
 					return result.data.map((elem) => {
