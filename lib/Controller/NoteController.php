@@ -134,7 +134,7 @@ $userData=$this->getUserData($this->userId);
 	/**
 	 * @NoAdminRequired
 	 * @param string $userId
-	 * @return aray
+	 * @return array
 	 * @throws NotFoundException
 	 * @throws OCSException
 	 * @throws OCSNotFoundException

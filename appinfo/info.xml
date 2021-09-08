@@ -12,7 +12,7 @@
     <category>tools</category>
     <bugs>https://rockedcube.com</bugs>
     <dependencies>
-        <nextcloud min-version="15" max-version="21"/>
+        <nextcloud min-version="15" max-version="22"/>
     </dependencies>
     <navigations>
         <navigation>

@@ -15,7 +15,7 @@ export default {
 	 *
 	 * @param {object} note Object
 	 */
-	saveNote: (note) => {
+	saveNote: (note) =>  {
 		if (!note.id) { note.id = -1 }
 		if (!note.category) { note.category = 0 }
 		// if (!note.pin_flag) { note.pin_flag = false }

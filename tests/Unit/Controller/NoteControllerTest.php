@@ -40,6 +40,6 @@ class NoteControllerTest extends PHPUnit_Framework_TestCase{
         ->method('update')
         ->will($this->throwException(new NotFoundException()));
         $result = $this->controller->update(3,'title','content');
-        $thid->assertEquals(Http::STATUS_NOT_FOUND,$result->getStatus());
+        $this->assertEquals(Http::STATUS_NOT_FOUND,$result->getStatus());
     }
 }

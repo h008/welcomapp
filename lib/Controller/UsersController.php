@@ -5,6 +5,7 @@ namespace OCA\WelcomApp\Controller;
 use OCP\Files\NotFoundException;
 use OCP\AppFramework\OCS\OCSException;
 use OCP\AppFramework\OCS\OCSNotFoundException;
+use OCP\AppFramework\Http;
 
 use OCA\WelcomApp\AppInfo\Application;
 use OCP\Accounts\IAccountManager;
@@ -121,7 +122,7 @@ class UsersController extends Controller
 	/**
 	 * @NoAdminRequired
 	 * @param string $userId
-	 * @return aray
+	 * @return array
 	 * @throws NotFoundException
 	 * @throws OCSException
 	 * @throws OCSNotFoundException
