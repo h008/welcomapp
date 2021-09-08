@@ -2,14 +2,14 @@
 	<div class="pagination__wrapper">
 		<ul class="pagination">
 			<li>
-				<a @click="updateCurrent(1)">«</a>
+				<a @click="updateCurrent(1)">≪</a>
 			</li>
 			<li v-for="item of displayList" :key="`pa__${item}`">
 				<a v-if="item===current" class="active" @click="updateCurrent(item)">{{ item }}</a>
 				<a v-else @click="updateCurrent(item)">{{ item }}</a>
 			</li>
 			<li>
-				<a @click="updateCurrent(total)">«</a>
+				<a @click="updateCurrent(total)">≫</a>
 			</li>
 		</ul>
 	</div>

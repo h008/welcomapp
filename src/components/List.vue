@@ -152,9 +152,12 @@ export default {
 		},
 		fetchNotes() {
 			this.loading = true
+			console.info('list')
 			Modules.fetchNotes(this.user, this.filter).then((result) => {
+				console.info(result)
 				this.localListItem = result.data
 				this.totalNotesNumber = result.total
+				console.info(this.totalNotesNumber)
 				this.loading = false
 			})
 		},

@@ -44,7 +44,6 @@ export default {
 	 * @param {object} note Note object
 	 */
 	deleteNote: async (note) => {
-		console.info('deleteNote')
 		 removeAttachedFiles(note).then(() => {
 			 axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
 		}).catch((e) => {
@@ -176,11 +175,8 @@ export default {
 	fetchShareInfo(shareId) {
 		if (!shareId) { return '' }
 			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
-			console.info('fetchShareInfo')
-				 console.info(result.data.ocs.data[0])
-			 // return result?.data?.ocs?.data[0]?.file_target
 			 return result?.data?.ocs?.data[0]?.path
-			 })
+			 }).catch(() => { return '' })
 
 	},
 	fetchHeader(userId) {
@@ -207,15 +203,9 @@ export default {
 					if (value.shareId) {
 						return this.fetchShareInfo(value.shareId).then((userDir) => {
 							const headerDir = `${userId}${userDir}`
-							console.info('headerDir')
-							console.info(headerDir)
 							return this.fetchDirInfo(headerDir).then((dirInfo) => {
-								console.info('dirInfo')
-								console.info(dirInfo)
 								const regex = /image/
 								const headerDirInfo = dirInfo.filter((element) => regex.test(element.filetype)).map((file) => file.href)
-								console.info('headerDirInfo')
-								console.info(headerDirInfo)
 								tmpData.images = headerDirInfo
 								return tmpData
 							})
@@ -236,9 +226,17 @@ export default {
 
 	},
 		 fetchFileInfo(uuid, userId, userDir) {
+			 console.info('fetchFileInfo')
+		console.info('userDir')
+		console.info(userDir)
+
 			 if (!uuid) { return Promise.resolve([]) }
 		return axios.get(generateUrl(`/apps/welcomapp/getfiles/${uuid}`)).then((result) => {
-			if (!result || !result.data || !result.data.length) { return [] }
+			console.info(result)
+			if (!result || !result.data || !result.data.length) {
+				console.info('nolength')
+				 return []
+			}
 			return result.data.map((elem) => {
 				if (elem.filetype === 'folder') {
 					elem.userRef = generateUrl(`/f/${elem.id}`)
@@ -288,87 +286,79 @@ export default {
 	},
 	// TODO
 	fetchNotes(user, propFilter) {
-		console.info('debug1')
 		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: true, pinFlag: false }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
 		const userGroups = user.groups
-
-		const dataP = axios.get(generateUrl('/apps/welcomapp/filter'), {
-			params: filter,
-			// paramsSerializer: () => {
-			// return transformRequestOptions(filter)
-			// },
-		}).then((result) => {
-			let data = result.data
-			if (!data || !data.length) {
-				return Promise.resolve([])
-
-			}
-			// TODO
-			 data = data.map((note) => {
-				 if (note.userId && note.shareInfo) {
-					 const shareInfos = JSON.parse(note.shareInfo)
-					const shareId = shareInfos.filter((shareInfo) => userGroups.includes(shareInfo.gid)).map((share) => share.shareId)[0]
-					 if (!shareId) { return {} }
-
-					const userInfoP = this.autherInfo(note.userId)
-					 console.info('userInfo')
-					console.info(userInfoP)
-					const userDirP = this.fetchShareInfo(shareId)
-					 console.info('userDir')
-					 console.info(userDirP)
-					return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
-						note.userInfo = userInfo
-						note.userDir = userDir
-						console.info('promise1')
-						console.info(note)
-				 if (note.content) {
-					 // TODO
-							const targetStr = note.content
-							const beforeStr = `/${note.userId}/.announce_${note.uuid}`
-							const afterStr = `/${userId}${userDir}`
-							const reg = new RegExp(beforeStr, 'g')
-							note.content = targetStr.replace(reg, afterStr)
-				 }
-						if (userId && userDir && note.uuid) {
-							const path = `${userId}${userDir}`
-							console.info('path')
-							console.info(path)
-							const dirInfo = this.fetchDirInfo(path)
-							console.info(dirInfo)
-							const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
-							console.info(fileInfo)
-							return Promise.all([fileInfo, dirInfo]).then((array) => {
-								const checked = this.compareFileInfo(array, note)
-								note.fileInfo = checked.fileInfo
-								note.dirInfo = checked.dirInfo
-								return note
-							})
-						} else {
-							return Promise.resolve(note)
-						}
-					})
-				} else {
-					return Promise.resolve(note)
-				}
-
-			})
-			return Promise.all(data)
+		return axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter }).then((result) => {
+			return result.data
 		}).catch((e) => {
 			console.error(e)
 			showError(t('welcomapp', 'Could not fetch notes'))
-			return Promise.resolve([])
-		})
-			 const totalP = axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter }).then((result) => {
-			  return result.data
-			 }).catch((e) => {
-			console.error(e)
-			showError(t('welcomapp', 'Could not fetch notes'))
-				 return Promise.resolve(0)
-			 })
-		return Promise.all([totalP, dataP]).then((array) => {
-			return { total: array[0], data: array[1] }
+			return Promise.resolve(0)
+		}).then((total) => {
+
+		 return axios.get(generateUrl('/apps/welcomapp/filter'), {
+				params: filter,
+			// paramsSerializer: () => {
+			// return transformRequestOptions(filter)
+			// },
+			}).then((result) => {
+				const data = result.data
+				if (!data || !data.length) {
+					return Promise.resolve([])
+
+				}
+				// TODO
+				const addedData = data.map((note) => {
+					if (note.userId && note.shareInfo) {
+						const shareInfos = JSON.parse(note.shareInfo)
+						const shareId = shareInfos.filter(
+							(shareInfo) => userGroups.includes(shareInfo.gid)
+						).map((share) => share.shareId)[0]
+						if (!shareId) { return {} }
+						const userInfoP = this.autherInfo(note.userId)
+						const userDirP = this.fetchShareInfo(shareId)
+						return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
+							note.userInfo = userInfo
+							note.userDir = userDir
+							if (note.content) {
+							// TODO
+								const targetStr = note.content
+								const beforeStr = `/${note.userId}/.announce_${note.uuid}`
+								const afterStr = `/${userId}${userDir}`
+								const reg = new RegExp(beforeStr, 'g')
+								note.content = targetStr.replace(reg, afterStr)
+							}
+							if (userId && userDir && note.uuid) {
+								const path = `${userId}${userDir}`
+								const dirInfo = this.fetchDirInfo(path)
+								const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
+								return Promise.all([fileInfo, dirInfo]).then((array) => {
+									const checked = this.compareFileInfo(array)
+									note.fileInfo = checked.fileInfo
+									note.dirInfo = checked.dirInfo
+									return note
+								})
+							} else {
+								return Promise.resolve(note)
+							}
+						})
+					} else {
+						return Promise.resolve(note)
+					}
+
+				})
+
+				return Promise.all(addedData).then((data) => {
+					return { total, data }
+
+				})
+			}).catch((e) => {
+				console.error(e)
+				showError(t('welcomapp', 'Could not fetch notes'))
+				return Promise.resolve([])
+			})
 		})
 
 	},
@@ -376,11 +366,10 @@ export default {
 		return checkDirExist(path)
 	},
 	fetchShareDir(shareInfoStr, user) {
-		console.info('here')
 		if (shareInfoStr) {
 			const shareInfo = JSON.parse(shareInfoStr)
 			if (!shareInfo.length) {
-				console.info(shareInfo)
+				return ''
 
 			}
 			if (!user.groups?.length) { return '' }
@@ -420,14 +409,10 @@ export default {
  */
 
 const removeAttachedFiles = (note) => {
-	console.info('remove')
-	console.info(note)
 	if (!note.shareInfo || !note.uuid) { return false }
-	console.info(note.shareInfo)
 
 	const shareInfo = JSON.parse(note.shareInfo)
 		   const shareId = shareInfo[0].shareId
-	console.info(shareId)
 	return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
 
 			 const dir = result?.data?.ocs?.data[0]?.file_target
@@ -561,7 +546,6 @@ const fetchDirList = async (path) => {
 		return parseXml(result.data)
 	}).catch((e) => {
 		if (e.response) {
-			console.info(e.response)
 			return e.response
 		} else {
 			return e

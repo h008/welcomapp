@@ -28,20 +28,20 @@ class FilesMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 	/**
-	 * @param int $fileurl
+	 * @param string $fileurl
 	 * @return array
+	 * @throws DoesNotExistException
 	 */
 	public function findByAid(string $fileurl): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('welcomapp_files')
-			->where($qb->expr()->eq('fileurl', $qb->createNamedParameter($fileurl, IQueryBuilder::PARAM_STR)));
+			->where($qb->expr()->eq('fileurl', $fileurl));
 		return $this->findEntities($qb);
 	}
 
 	/**
-	 * @param string $userId
 	 * @return array
 	 */
 	public function findAll(): array {

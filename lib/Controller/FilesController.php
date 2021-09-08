@@ -51,7 +51,7 @@ class FilesController extends Controller
 	public function showByAid(string $fileurl): DataResponse
 	{
 		return $this->handleNotFound(function () use ($fileurl) {
-			return new DataResponse($this->service->findByAid($fileurl));
+			return $this->service->findByAid($fileurl);
 		});
 	}
 
