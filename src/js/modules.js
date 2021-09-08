@@ -287,6 +287,7 @@ export default {
 	},
 	// TODO
 	fetchNotes(user, propFilter) {
+		console.info('debug1')
 		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: true, pinFlag: false }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
@@ -311,11 +312,16 @@ export default {
 					 if (!shareId) { return {} }
 
 					const userInfoP = this.autherInfo(note.userId)
-
+					 console.info('userInfo')
+					console.info(userInfo)
 					const userDirP = this.fetchShareInfo(shareId)
+					 console.info('userDir')
+					 console.info(userDirP)
 					return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
 						note.userInfo = userInfo
 						note.userDir = userDir
+						console.info('promise1')
+						console.info(note)
 				 if (note.content) {
 					 // TODO
 							const targetStr = note.content
@@ -326,6 +332,8 @@ export default {
 				 }
 						if (userId && userDir && note.uuid) {
 							const path = `${userId}${userDir}`
+							console.info('path')
+							console.info(path)
 							const dirInfo = this.fetchDirInfo(path)
 							console.info(dirInfo)
 							const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
