@@ -15,7 +15,7 @@ export default {
 	 *
 	 * @param {object} note Object
 	 */
-	saveNote: (note) =>  {
+	saveNote: (note) => {
 		if (!note.id) { note.id = -1 }
 		if (!note.category) { note.category = 0 }
 		// if (!note.pin_flag) { note.pin_flag = false }
@@ -238,6 +238,7 @@ export default {
 		 fetchFileInfo(uuid, userId, userDir) {
 			 if (!uuid) { return Promise.resolve([]) }
 		return axios.get(generateUrl(`/apps/welcomapp/getfiles/${uuid}`)).then((result) => {
+			if (!result || !result.data || !result.data.length) { return [] }
 			return result.data.map((elem) => {
 				if (elem.filetype === 'folder') {
 					elem.userRef = generateUrl(`/f/${elem.id}`)
