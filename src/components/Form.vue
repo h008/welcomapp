@@ -254,6 +254,12 @@ export default {
 			this.localNote.tags = mappedTag.join(',')
 			console.info(mappedTag)
 		},
+		selectedGroups(val) {
+			if (!val || !val.length) {
+				this.localNote.pubFlag = 0
+			}
+
+		},
 		dialog(val) {
 			if (!val) {
 				this.selectedCategory = {}

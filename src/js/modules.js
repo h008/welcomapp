@@ -18,6 +18,9 @@ export default {
 	saveNote: (note) => {
 		if (!note.id) { note.id = -1 }
 		if (!note.category) { note.category = 0 }
+		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
+			note.pubFlag = 0
+		}
 		// if (!note.pin_flag) { note.pin_flag = false }
 		// if (!note.pub_flag) { note.pub_flag = false }
 		if (note.id === -1) {
