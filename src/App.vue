@@ -75,10 +75,6 @@
 				<HeaderEdit :user="user" :header-config.sync="headerConfig" />
 			</div>
 
-			<div v-if="!notes" id="emptycontent">
-				<div class="icon-file" />
-				<h2>{{ t("welcomapp", "表示するアイテムはありません。") }}</h2>
-			</div>
 		</AppContent>
 	</div>
 </template>
