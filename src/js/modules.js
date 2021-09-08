@@ -316,9 +316,18 @@ export default {
 						const shareId = shareInfos.filter(
 							(shareInfo) => userGroups.includes(shareInfo.gid)
 						).map((share) => share.shareId)[0]
-						if (!shareId) { return {} }
+						let userDirP
+						if (!shareId) {
+							if (note.userId !== user.id) {
+								return {}
+							}
+							note.pubFlag = 0
+							userDirP = Promise.resolve(`.announce_${note.uuid}`)
+						} else {
+							userDirP = this.fetchShareInfo(shareId)
+
+						}
 						const userInfoP = this.autherInfo(note.userId)
-						const userDirP = this.fetchShareInfo(shareId)
 						return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
 							note.userInfo = userInfo
 							note.userDir = userDir

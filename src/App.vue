@@ -74,7 +74,6 @@
 			<div v-if="mode=='headerSetting' && isAdmin">
 				<HeaderEdit :user="user" :header-config.sync="headerConfig" />
 			</div>
-
 		</AppContent>
 	</div>
 </template>
