@@ -28,10 +28,8 @@ class FilesMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 	/**
-	 * @param int $annouceId
-	 * @return Entity|Files
-	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-	 * @throws DoesNotExistException
+	 * @param int $fileurl
+	 * @return array
 	 */
 	public function findByAid(string $fileurl): array {
 		/* @var $qb IQueryBuilder */
