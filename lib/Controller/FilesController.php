@@ -88,7 +88,7 @@ class FilesController extends Controller
 		string $href,
 		bool $hasPreview,
 		string $updated,
-		int $size,
+		int $size
 
 
 	): DataResponse {
