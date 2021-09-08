@@ -313,7 +313,7 @@ export default {
 
 					const userInfoP = this.autherInfo(note.userId)
 					 console.info('userInfo')
-					console.info(userInfo)
+					console.info(userInfoP)
 					const userDirP = this.fetchShareInfo(shareId)
 					 console.info('userDir')
 					 console.info(userDirP)
