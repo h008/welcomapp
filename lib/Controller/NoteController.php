@@ -63,7 +63,7 @@ class NoteController extends Controller
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filter(int $category,int $offset ,int $limit,bool $pubFlag,bool $pinFlag): DataResponse
+	public function filter(int $category,int $offset ,int $limit,int $pubFlag,int $pinFlag): DataResponse
 	{
 $userData=$this->getUserData($this->userId);
 		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag,$userData) {
@@ -73,7 +73,7 @@ $userData=$this->getUserData($this->userId);
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filtercount(int $category,bool $pubFlag,bool $pinFlag)
+	public function filtercount(int $category,int $pubFlag,int $pinFlag)
 	{
 $userData=$this->getUserData($this->userId);
 		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag,$userData) {
@@ -84,7 +84,7 @@ $userData=$this->getUserData($this->userId);
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
+	public function create(string $title, string $content,int $category,int $pinFlag,int $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
 	{
 		if($pinFlag){$pinFlag=1;}else{$pinFlag=0;}
 		return new DataResponse($this->service->create(
@@ -108,8 +108,8 @@ $userData=$this->getUserData($this->userId);
 		string $title,
 		string $content,
 		int $category,
-		bool $pinFlag,
-		bool $pubFlag,
+		int $pinFlag,
+		int $pubFlag,
 		string $tags,
 		string $uuid,
 		string $shareInfo

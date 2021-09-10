@@ -30,7 +30,7 @@ export default {
 		}
 		if (!note.id) { noteObj.id = -1 }
 		if (!note.category) { noteObj.category = 0 }
-		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
+		if (note.pubFlag && (!note.shareInfo || !note.shareInfo.match(/shareId/))) {
 			noteObj.pubFlag = 0
 		} else { noteObj.pubFlag = 1 }
 		if (!note.pinFlag) { noteObj.pinFlag = 0 } else { noteObj.pinFlag = 1 }

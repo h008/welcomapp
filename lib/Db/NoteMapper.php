@@ -53,7 +53,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filter(int $category, int $offset,int $limit,bool $pubFlag,bool $pinFlag,array $userData,string $userId): array {
+	public function filter(int $category, int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,string $userId): array {
 		/* @var $qb1 IQueryBuilder */
 		 //$qb1= $this->db->getQueryBuilder();
  //$qb1->select('*')
@@ -107,7 +107,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filtercount(int $category,bool $pubFlag,bool $pinFlag,array $userData ,string $userId): int {
+	public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData ,string $userId): int {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
