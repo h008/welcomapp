@@ -21,6 +21,7 @@ export default {
 		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
 			note.pubFlag = 0
 		}
+		if(!note.pinFlag) { note.pinFlag = 0 }
 		// if (!note.pin_flag) { note.pin_flag = false }
 		// if (!note.pub_flag) { note.pub_flag = false }
 		if (note.id === -1) {

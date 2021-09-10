@@ -37,7 +37,7 @@ class WelcomTagMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('welcomapp_tags')
-			->orderBy('category_order', 'ASC');
+			->orderBy('tag_order', 'ASC');
 		return $this->findEntities($qb);
 	}
 }
