@@ -99,7 +99,7 @@ $userData=$this->getUserData($this->userId);
 			$pubFlag,
 			$tags,
 			$uuid,
-			$shareInfo,
+			$shareInfo
 		));
 	}
 
