@@ -32,8 +32,8 @@ export default {
 		if (!note.category) { noteObj.category = 0 }
 		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
 			noteObj.pubFlag = 0
-		}
-		if (!note.pinFlag) { noteObj.pinFlag = 0 }
+		} else { noteObj.pubFlag = 1 }
+		if (!note.pinFlag) { noteObj.pinFlag = 0 } else { noteObj.pinFlag = 1 }
 		// if (!note.pin_flag) { note.pin_flag = false }
 		// if (!note.pub_flag) { note.pub_flag = false }
 		if (noteObj.id === -1) {
