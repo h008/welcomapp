@@ -86,6 +86,7 @@ $userData=$this->getUserData($this->userId);
 	 */
 	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
 	{
+		if($pinFlag){$pinFlag=1;}else{$pinFlag=0;}
 		return new DataResponse($this->service->create(
 			$title,
 			$content,
