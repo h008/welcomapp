@@ -23,8 +23,6 @@ class NoteController extends Controller
 	protected $userManager;
 	/** @var IGroupManager */
 	protected $groupManager;
-	/** @var IAccountManager */
-	protected $accountManager;
 
 	/** @var string */
 	private $userId;
@@ -36,7 +34,6 @@ class NoteController extends Controller
 		NoteService $service,
 		IGroupManager $groupManager,
 		IUserManager $userManager,
-		IAccountManager $accountManager,
 		$userId
 	) {
 		parent::__construct(Application::APP_ID, $request);
@@ -44,7 +41,6 @@ class NoteController extends Controller
 		$this->userId = $userId;
 		$this->groupManager=$groupManager;
 		$this->userManager=$userManager;
-		$this->accountManager=$accountManager;
 	}
 
 	/**
@@ -145,15 +141,14 @@ $userData=$this->getUserData($this->userId);
 		if($targetUserObject === null){
 			throw new OCSNotFoundException('User does not exist');
 		}
-		$userAccount = $this->accountManager->getAccount($targetUserObject);
 		$groups=$this->groupManager->getUserGroups($targetUserObject);
 		$gids=[];
 		foreach($groups as $group) {
 			$gids[]=$group->getGID();
 		}
-		$data['id']=$targetUserObject->getUID();
-		$data['groups']=$gids;
-		return $data;
+		$udata['id']=$targetUserObject->getUID();
+		$udata['groups']=$gids;
+		return $udata;
 		
 	}
 }
