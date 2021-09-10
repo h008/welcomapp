@@ -24,6 +24,7 @@ export default {
 			pinFlag: note.pinFlag,
 			pubFlag: note.pubFlag,
 			tags: note.tags,
+			uuid: note.uuid,
 			shareInfo: note.shareInfo,
 
 		}
