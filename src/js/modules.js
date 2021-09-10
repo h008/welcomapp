@@ -16,18 +16,29 @@ export default {
 	 * @param {object} note Object
 	 */
 	saveNote: (note) => {
-		if (!note.id) { note.id = -1 }
-		if (!note.category) { note.category = 0 }
-		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
-			note.pubFlag = 0
+		const noteObj = {
+			id: note.id,
+			title: note.title,
+			content: note.content,
+			category: note.category,
+			pinFlag: note.pinFlag,
+			pubFlag: note.pubFlag,
+			tags: note.tags,
+			shareInfo: note.shareInfo,
+
 		}
-		if (!note.pinFlag) { note.pinFlag = 0 }
+		if (!note.id) { noteObj.id = -1 }
+		if (!note.category) { noteObj.category = 0 }
+		if (note.pubFlag && (!note.shareInfo || note.shareInfo.match(/shareId/))) {
+			noteObj.pubFlag = 0
+		}
+		if (!note.pinFlag) { noteObj.pinFlag = 0 }
 		// if (!note.pin_flag) { note.pin_flag = false }
 		// if (!note.pub_flag) { note.pub_flag = false }
-		if (note.id === -1) {
-			return createNote(note)
+		if (noteObj.id === -1) {
+			return createNote(noteObj)
 		} else {
-			return updateNote(note)
+			return updateNote(noteObj)
 		}
 	},
 	/**
