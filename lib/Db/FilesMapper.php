@@ -37,7 +37,7 @@ class FilesMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('welcomapp_files')
-			->where($qb->expr()->eq('fileurl', $fileurl));
+			->where($qb->expr()->eq('fileurl', $qb->createNamedParameter($fileurl)));
 		return $this->findEntities($qb);
 	}
 
