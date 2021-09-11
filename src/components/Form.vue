@@ -14,7 +14,6 @@
 				</div>
 			</div>
 			<div class="modal__content">
-				{{ localNote }}
 				<div>
 					<div class="input__label">
 						件名
@@ -112,8 +111,6 @@
 									:disabled="!canSave"
 									type="checkbox">
 								<label for="pin_flag">常に上部に表示する</label>
-								{{ localNote.pinFlag }}
-								{{ pinFlag }}
 							</div>
 							<div class="row__element">
 								<input
@@ -122,8 +119,6 @@
 									:disabled="!selectedGroups.length"
 									type="checkbox">
 								<label for="pin_flag">公開する</label>
-								{{ localNote.pubFlag }}
-								{{ pubFlag }}
 							</div>
 						</div>
 					</div>
