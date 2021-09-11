@@ -89,6 +89,17 @@ class NoteService {
         return $this->mapper->insert($note);
     }
     public function update(int $id,string $title, string $content, string $userId,int $category,int $pinFlag,int $pubFlag,string $tags,string $uuid,string $shareInfo){
+        if(!$pinFlag){$pinFlag=0;}
+        if(!$pubFlag){$pubFlag=0;}
+        try{
+            $pinFlag=intval($pinFlag);
+            $pubFlag=intval($pubFlag);
+
+        }catch (Exception $e) {
+            $pinFlag=0;
+            $pubFlag=0;
+
+        }
         try {
             $now = new DateTime();
             $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
