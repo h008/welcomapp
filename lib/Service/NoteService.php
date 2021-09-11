@@ -41,7 +41,7 @@ class NoteService {
 
         }catch (Exception $e) {
             $pinFlag=0;
-            $pubFlag=0;
+            $pubFlag=1;
 
         }
         try{
@@ -59,7 +59,7 @@ class NoteService {
 
         }catch (Exception $e) {
             $pinFlag=0;
-            $pubFlag=0;
+            $pubFlag=1;
 
         }
         try{
