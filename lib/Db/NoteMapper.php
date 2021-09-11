@@ -94,7 +94,7 @@ class NoteMapper extends QBMapper {
 			$orX = $qb->expr()->orX();
 			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
 			foreach($groups as $groupId ) {
-				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%\"gid\":\"'.$groupId.'\"%')));
 			}
 			$qb->andWhere($orX);
 		}
@@ -133,7 +133,7 @@ class NoteMapper extends QBMapper {
 			$orX = $qb->expr()->orX();
 			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
 			foreach($groups as $groupId ) {
-				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%\"gid\":\"'.$groupId.'\"%')));
 			}
 			$qb->andWhere($orX);
 		}
