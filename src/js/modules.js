@@ -61,7 +61,9 @@ export default {
 	 */
 	deleteNote: async (note) => {
 		 removeAttachedFiles(note).then(() => {
+			 if (note.id > 0) {
 			 axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
+			 }
 		}).catch((e) => {
 			console.error(e)
 			showError(t('welcomapp', 'Could not delete'))
@@ -87,6 +89,7 @@ export default {
 	 * @param {object} category Category object
 	 */
 	deleteCategory: async (category) => {
+		if (!category || !category.id) { return }
 		try {
 			await axios.delete(generateUrl(`/apps/welcomapp/categories/${category.id}`))
 			return category
@@ -115,6 +118,7 @@ export default {
 	 * @param {object} tag Tag object
 	 */
 	deleteTag: async (tag) => {
+		if (!tag || !tag.id) { return }
 		try {
 			await axios.delete(generateUrl(`/apps/welcomapp/tags/${tag.id}`))
 			return tag
@@ -129,6 +133,7 @@ export default {
 	 * @param {string} path string
 	 */
 	fetchDirInfoOrCreate: async (path) => {
+		if (!path) { return }
 		return checkDirExist(path).then((exist) => {
 
 			if (exist) {
@@ -150,6 +155,7 @@ export default {
 	 * @param {string} path string
 	 */
 	fetchDirInfo: async (path) => {
+		if (!path) { return }
 		return checkDirExist(path).then((exist) => {
 			if (exist) {
 				return fetchDirList(path)
@@ -162,12 +168,15 @@ export default {
 
 	},
 	removeFile(file) {
+		if (!file || !file.url) { return Promise.resolve() }
 		return axios.delete(file.href).then(() => {
+			if (!file.fileId) { return Promise.resolve() }
 			return this.removeDataOfFile(file.fileId)
 
 		})
 	},
 	removeDataOfFile(fileId) {
+		if (!fileId) { return Promise.resolve() }
 		return axios.delete(generateUrl(`/apps/welcomapp/files/${fileId}`))
 
 	},
@@ -196,6 +205,7 @@ export default {
 
 	},
 	fetchHeader(userId) {
+		if (!userId) { return Promise.resolve() }
 		return axios.get(generateUrl('/apps/welcomapp/getconfig/header')).then((result) => {
 			if (result.data && result.data.length) {
 
@@ -218,8 +228,10 @@ export default {
 					tmpData.value = value
 					if (value.shareId) {
 						return this.fetchShareInfo(value.shareId).then((userDir) => {
+							if (!userDir) { return Promise.resolve(tmpData) }
 							const headerDir = `${userId}${userDir}`
 							return this.fetchDirInfo(headerDir).then((dirInfo) => {
+								if (!dirInfo || !dirInfo.length) { return tmpData }
 								const regex = /image/
 								const headerDirInfo = dirInfo.filter((element) => regex.test(element.filetype)).map((file) => file.href)
 								tmpData.images = headerDirInfo
@@ -325,7 +337,6 @@ export default {
 					return Promise.resolve([])
 
 				}
-				// TODO
 				const addedData = data.map((note) => {
 					if (note.userId && note.shareInfo) {
 						const shareInfos = JSON.parse(note.shareInfo)
@@ -388,6 +399,7 @@ export default {
 
 	},
 	checkDir(path) {
+		if (!path) { return false }
 		return checkDirExist(path)
 	},
 	fetchShareDir(shareInfoStr, user) {
@@ -399,6 +411,7 @@ export default {
 			}
 			if (!user.groups?.length) { return '' }
 			const shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]
+			if (!shareId) { return '' }
 
 			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
 
@@ -434,22 +447,27 @@ export default {
  */
 
 const removeAttachedFiles = (note) => {
-	if (!note.shareInfo || !note.uuid) { return false }
+	if (!note || !note.shareInfo || !note.uuid || !note.userId) { return false }
 
 	const shareInfo = JSON.parse(note.shareInfo)
+	if (!shareInfo || !shareInfo.length) { return Promise.resolve() }
 		   const shareId = shareInfo[0].shareId
+	if (!shareId) { return Promise.resolve() }
 	return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
 
 			 const dir = result?.data?.ocs?.data[0]?.file_target
 		if (dir) {
 			const promises = []
 			const path = `${note.userId}${dir}`
+			if (!path) { return Promise.resolve() }
 			return axios.delete(`/remote.php/dav/files/${path}`).then(() => {
 
 				return axios.get(generateUrl(`/apps/welcomapp/getfiles/${note.uuid}`)).then((result) => {
 					if (result.data && result.data.length) {
 						result.data.forEach((file) => {
-							promises.push(axios.delete(generateUrl(`/apps/welcomapp/files/${file.id}`)))
+							if (file && file.id) {
+								promises.push(axios.delete(generateUrl(`/apps/welcomapp/files/${file.id}`)))
+							}
 						})
 						return Promise.all(promises)
 					} else { return Promise.resolve() }
@@ -460,6 +478,7 @@ const removeAttachedFiles = (note) => {
 			 } else {
 			return Promise.resolve()
 		}
+
 	})
 
 }
@@ -469,12 +488,14 @@ const removeAttachedFiles = (note) => {
  * @param {string} xml string
  */
 const parseXml = (xml) => {
+	if (!xml) { return [] }
 	const parser = new DOMParser()
 	const dom = parser.parseFromString(xml, 'text/xml')
-	const response = dom.getElementsByTagName('d:multistatus')[0].getElementsByTagName('d:response')
+	const response = dom.getElementsByTagName('d:multistatus')[0]?.getElementsByTagName('d:response')
+	if (!response || !response.length) { return [] }
 	const result = []
 	response.forEach((element) => {
-		const prop = element.getElementsByTagName('d:propstat')[0].getElementsByTagName('d:prop')[0]
+		const prop = element.getElementsByTagName('d:propstat')[0]?.getElementsByTagName('d:prop')[0]
 		const href = element.getElementsByTagName('d:href')[0]?.textContent
 		const modified = prop.getElementsByTagName('d:getlastmodified')[0]?.textContent
 		const updated = dayjs.tz(modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
@@ -493,10 +514,14 @@ const parseXml = (xml) => {
 		}
 		const hasPreview = prop.getElementsByTagName('nc:has-preview')[0]?.textContent
 		const tmpArray = decodeURI(href).split('/')
-		let filename = tmpArray.pop()
-		if (!filename) {
+		let filename = ''
+		if (tmpArray && tmpArray.length) {
+
 			filename = tmpArray.pop()
-			filetype = 'folder'
+			if (!filename) {
+				filename = tmpArray.pop()
+				filetype = 'folder'
+			}
 		}
 		const href2 = generateUrl(`/f/${fileId}`)
 
@@ -506,7 +531,9 @@ const parseXml = (xml) => {
 	return result
 }
 const checkDirExist = async (path) => {
+	if (!path) { return false }
 	const href = path.split('/')
+	if (!href && !href.length) { return false }
 	const displayName = href.pop()
 	const hrefStr = href.join('/')
 	const testData = `<?xml version="1.0" encoding="UTF-8"?>
@@ -537,6 +564,7 @@ const checkDirExist = async (path) => {
 </d:searchrequest>`
 
 	return axios.request({ url: '/remote.php/dav/', data: testData, method: 'SEARCH', headers: { 'content-Type': 'text/xml' } }).then((result) => {
+		if (!result || !result.data) { return false }
 		const parser = new DOMParser()
 		const dom = parser.parseFromString(result.data, 'text/xml')
 		let response = dom.getElementsByTagName('d:multistatus')[0]?.getElementsByTagName('d:response')[0]?.getElementsByTagName('d:href')[0]?.textContent
@@ -556,6 +584,7 @@ const checkDirExist = async (path) => {
  * @param {string} path string
  */
 const fetchDirList = async (path) => {
+	if (!path) { return }
 	const data = `<?xml version="1.0"?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">
   <d:prop>
@@ -568,6 +597,7 @@ const fetchDirList = async (path) => {
 </d:propfind>`
 
 	 return axios.request({ url: `/remote.php/dav/files/${path}`, data, method: 'PROPFIND' }).then((result) => {
+		 if (!result || !result.data) { return }
 		return parseXml(result.data)
 	}).catch((e) => {
 		if (e.response) {
@@ -584,10 +614,9 @@ const fetchDirList = async (path) => {
  * @param {string} path string
  */
 const createDir = async (path) => {
+	if (!path) { return }
 
-	 return axios.request({ url: `/remote.php/dav/files/${path}`, method: 'MKCOL' }).then((result) => {
-
-	}).catch((e) => {
+	 return axios.request({ url: `/remote.php/dav/files/${path}`, method: 'MKCOL' }).catch((e) => {
 		if (e.response) {
 			return e.response
 		} else {
@@ -602,6 +631,7 @@ const createDir = async (path) => {
  * @param {object} note Note object
  */
 	 const createNote = async (note) => {
+		 if (!note) { return }
 	try {
 		const response = await axios.post(
 			generateUrl('/apps/welcomapp/notes'),
@@ -619,6 +649,7 @@ const createDir = async (path) => {
  * @param {object} note Note object
  */
 	 const updateNote = async (note) => {
+		 if (!note || !note.id) { return }
 	try {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/notes/${note.id}`), note)
 		return response
@@ -634,6 +665,7 @@ const createDir = async (path) => {
  * @param {object} category Category object
  */
 	 const createCategory = async (category) => {
+		 if (!category) { return }
 	try {
 		const response = await axios.post(
 			generateUrl('/apps/welcomapp/categories'),
@@ -651,6 +683,7 @@ const createDir = async (path) => {
  * @param {object} category Category object
  */
 	 const updateCategory = async (category) => {
+		 if (!category || !category.id) { return }
 	try {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/categories/${category.id}`), category)
 		return response
@@ -665,6 +698,7 @@ const createDir = async (path) => {
  * @param {object} tag Tag object
  */
 	 const createTag = async (tag) => {
+		 if (!tag) { return }
 	try {
 		const response = await axios.post(
 			generateUrl('/apps/welcomapp/tags'),
@@ -682,6 +716,7 @@ const createDir = async (path) => {
  * @param {object} tag Tag object
  */
 	 const updateTag = async (tag) => {
+		 if (!tag || !tag.id) { return }
 	try {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/tags/${tag.id}`), tag)
 		return response
