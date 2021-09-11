@@ -125,7 +125,7 @@ export default {
 	watch: {
 		mode() {
 			this.localListItem = Array.from(this.notes)
-			console.info(this.localListItem)
+			// console.info(this.localListItem)
 		},
 		filter() {
 			this.fetchNotes()
@@ -152,9 +152,9 @@ export default {
 		},
 		fetchNotes() {
 			this.loading = true
-			console.info('list')
+			// console.info('list')
 			Modules.fetchNotes(this.user, this.filter).then((result) => {
-				console.info(result)
+				// console.info(result)
 				if (result && result.data && result.data.length) {
 					this.localListItem = result.data
 					this.totalNotesNumber = result.total

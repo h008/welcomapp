@@ -11,7 +11,6 @@ use OCP\IRequest;
 
 use OCP\AppFramework\OCS\OCSException;
 use OCP\AppFramework\OCS\OCSNotFoundException;
-use OCP\Accounts\IAccountManager;
 use OCP\IUserManager;
 use OCP\IGroupManager;
 
@@ -32,9 +31,9 @@ class NoteController extends Controller
 	public function __construct(
 		IRequest $request,
 		NoteService $service,
+		$userId,
 		IGroupManager $groupManager,
 		IUserManager $userManager,
-		$userId
 	) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -84,7 +83,7 @@ $userData=$this->getUserData($this->userId);
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, string $content,int $category,int $pinFlag,int $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
+	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
 	{
 		if($pinFlag){$pinFlag=1;}else{$pinFlag=0;}
 		return new DataResponse($this->service->create(
@@ -108,8 +107,8 @@ $userData=$this->getUserData($this->userId);
 		string $title,
 		string $content,
 		int $category,
-		int $pinFlag,
-		int $pubFlag,
+		bool $pinFlag,
+		bool $pubFlag,
 		string $tags,
 		string $uuid,
 		string $shareInfo

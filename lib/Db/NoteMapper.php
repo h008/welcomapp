@@ -64,9 +64,9 @@ class NoteMapper extends QBMapper {
 		$qb->select('*')
 			->from('welcomapp')
 			->orderBy('updated','DESC');
-		if(!$pubFlag){
+		if($pubFlag==0){
 			$qb->where($qb->expr()->orX(
-				$qb->expr()->eq('pub_flag', $qb->createNamedParameter($pubFlag,IQueryBuilder::PARAM_INT)),
+				$qb->expr()->eq('pub_flag', $qb->createNamedParameter(0,IQueryBuilder::PARAM_INT)),
 				$qb->expr()->isNull('pub_flag'),
 				$qb->expr()->eq('pub_flag','')
 
@@ -112,15 +112,15 @@ class NoteMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
 			->from('welcomapp');
-		if(!$pubFlag){
+		if($pubFlag==0){
 			$qb->where($qb->expr()->orX(
-				$qb->expr()->eq('pub_flag', $qb->createNamedParameter($pubFlag,IQueryBuilder::PARAM_INT)),
+				$qb->expr()->eq('pub_flag', $qb->createNamedParameter(0,IQueryBuilder::PARAM_INT)),
 				$qb->expr()->isNull('pub_flag'),
 				$qb->expr()->eq('pub_flag','')
 			));
 			$qb->andWhere($qb->expr()->eq('user_id',$qb->createNamedParameter($userId)));
 		}else{
-			$qb->where($qb->expr()->eq('pub_flag',$qb->createNamedParameter($pubFlag,IQueryBuilder::PARAM_INT)));
+			$qb->where($qb->expr()->eq('pub_flag',$qb->createNamedParameter(1,IQueryBuilder::PARAM_INT)));
 		}
 		if($category != 0){
 			$qb->andWhere($qb->expr()->eq('category', $qb->createNamedParameter($category, IQueryBuilder::PARAM_INT)));

@@ -51,7 +51,7 @@ export default {
 		},
 		filter: {
 			type: Object,
-			default: () => { return { category: 0, pinFlag: true, pubFlag: true } },
+			default: () => { return { category: 0, pinFlag: 1, pubFlag: 1 } },
 		},
 	},
 	data() {
@@ -138,7 +138,7 @@ export default {
 
 		},
 		showDetail(item) {
-			console.info('showDettail')
+			// console.info('showDettail')
 			this.localCurrentNote = Object.assign({}, item)
 			this.$emit('update:mode', 'detail')
 			this.$emit('update:dialog', false)

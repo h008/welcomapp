@@ -62,7 +62,7 @@ export default {
 			// const data = { fileId }
 
 			// axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares/6', data, { headers: { 'OCS-APIRequest': true } }).then((result) => {
-			  // console.info(result.data.ocs.data)
+			  // //console.info(result.data.ocs.data)
 			  // })
 			return generateUrl(`/f/${fileId}`)
 		},

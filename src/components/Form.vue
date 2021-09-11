@@ -14,6 +14,7 @@
 				</div>
 			</div>
 			<div class="modal__content">
+				{{ localNote }}
 				<div>
 					<div class="input__label">
 						件名
@@ -107,18 +108,22 @@
 							<div class="row__element">
 								<input
 									id="pin_flag"
-									v-model="localNote.pinFlag"
+									v-model="pinFlag"
 									:disabled="!canSave"
 									type="checkbox">
 								<label for="pin_flag">常に上部に表示する</label>
+								{{ localNote.pinFlag }}
+								{{ pinFlag }}
 							</div>
 							<div class="row__element">
 								<input
 									id="pub_flag"
-									v-model="localNote.pubFlag"
+									v-model="pubFlag"
 									:disabled="!selectedGroups.length"
 									type="checkbox">
 								<label for="pin_flag">公開する</label>
+								{{ localNote.pubFlag }}
+								{{ pubFlag }}
 							</div>
 						</div>
 					</div>
@@ -237,6 +242,26 @@ export default {
 		canSave() {
 			return (this.localNote.title && this.selectedCategory.id && this.localNote.content)
 		},
+		pubFlag: {
+			get() { return Number(this.localNote.pubFlag) === 1 },
+			set(val) {
+				if (val) {
+					this.localNote.pubFlag = 1
+			    } else {
+					this.localNote.pubFlag = 0
+				}
+			},
+		},
+		pinFlag: {
+			get() { return Number(this.localNote.pinFlag) === 1 },
+			set(val) {
+				if (val) {
+					this.localNote.pinFlag = 1
+			    } else {
+					this.localNote.pinFlag = 0
+				}
+			},
+		},
 	},
 	watch: {
 		note(val) {
@@ -252,7 +277,7 @@ export default {
 				return elm.id
 			})
 			this.localNote.tags = mappedTag.join(',')
-			console.info(mappedTag)
+			// console.info(mappedTag)
 		},
 		selectedGroups(val) {
 			if (!val || !val.length) {
@@ -278,7 +303,7 @@ export default {
 			this.closeDialog()
 		},
 		toggleScreenWidth() {
-			console.info('full')
+			// console.info('full')
 			if (this.contentWidth === 'w800') {
 				this.contentWidth = 'full'
 				this.iconScreenWidth = 'icon-history'
@@ -295,7 +320,11 @@ export default {
 		},
 		donothing() {},
 		initializeNote(val) {
+
 			this.localNote = Object.assign({}, val)
+			// if (val.pubFlag !== 1) { this.localNote.pubFlag = false }
+			// if (val.pinFlag !== 1) { this.localNote.pinFlag = false }
+
 			if (val.category && this.categories.length) {
 				this.selectedCategory = this.categories.find(
 					(category) => Number(category.id) === Number(val.category)
@@ -333,7 +362,7 @@ export default {
 		},
 
 		saveNote() {
-			console.info(this.localNote)
+			// console.info(this.localNote)
 			this.shareFolder().then((shareInfo) => {
 				this.localNote.shareInfo = shareInfo
 				Mymodules.saveNote(this.localNote)
@@ -371,12 +400,12 @@ export default {
 						shareId: this.user.shareId,
 
 					}
-					console.info(data)
+					// console.info(data)
 					axios.post(generateUrl('/apps/welcomapp/files'), data).then((result) => {
-						console.info('saveFile')
-						console.info(result)
+						// console.info('saveFile')
+						// console.info(result)
 					}).catch((e) => {
-						console.info('saveFileError')
+						// console.info('saveFileError')
 						console.error(e)
 					})
 
@@ -424,8 +453,8 @@ export default {
 							const shareId = result?.data?.ocs?.data?.id
 							return { gid: group.id, shareId }
 						}).catch((e) => {
-							console.info('postErr')
-							console.info(e)
+							// console.info('postErr')
+							// console.info(e)
 							return { gid: '', shareId: '' }
 						})
 					} else {
@@ -434,16 +463,21 @@ export default {
 				})
 				const promiseArray2 = unshares.map((unshare) => {
 					if (!unshare.shareId) { return {} }
-					return axios.delete(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${unshare.shareId}`).catch((e) => { console.info(e) })
+					return axios.delete(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${unshare.shareId}`).catch((e) => {
+						// console.info(e)
+						 })
 				})
 				Promise.all(promiseArray2).then((result) => {
-					console.info('unshareResult')
-					console.info(result)
+					// console.info('unshareResult')
+					// console.info(result)
 
 				})
 
 				return Promise.all(promiseArray).then((tmpArray) => {
-					return JSON.stringify(tmpArray)
+					const tmpStr = JSON.stringify(tmpArray)
+					// console.info('tmpStr')
+					// console.info(typeof tmpStr)
+					return tmpStr
 
 				})
 			})
@@ -489,7 +523,7 @@ export default {
 							if (result.status === 201 || result.status === 204) {
 								this.setDirInfo(path)
 							} else {
-								console.info(result)
+								// console.info(result)
 
 							}
 

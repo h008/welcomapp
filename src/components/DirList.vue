@@ -82,7 +82,7 @@ export default {
 				return this.items
 				// return this.items.map((item) => {
 				// const target = this.fileInfo.find((file) => Number(file.id) === Number(item.fileId))
-				// console.info(target)
+				// //console.info(target)
 				// if (target && target.is_eyecatch) {
 				// item.isEyecatch = true
 				// } else {

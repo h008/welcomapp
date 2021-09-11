@@ -1,8 +1,8 @@
 <?php
 namespace OCA\WelcomApp\Service;
 use Exception;
-//use DateTime;
-//use DateTimeZone;
+use DateTime;
+use DateTimeZone;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
@@ -51,17 +51,17 @@ class NoteService {
         string $content,
         string $userId,
         int $category,
-        int $pinFlag,
-        int $pubFlag,
+        bool $pinFlag,
+        bool $pubFlag,
         string $tags,
         string $uuid,
         string $shareInfo
         ){
 
-        //$now = new DateTime();
-        //$now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
-        //$date = $now->format('Y-m-d H:i:s');
-        $date=date("Y-m-d H:i:s");
+        $now = new DateTime();
+        $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
+        $date = $now->format('Y-m-d H:i:s');
+        //$date=date("Y-m-d H:i:s");
         $note=new Note();
         $note->setTitle($title);
         $note->setContent($content);
@@ -78,10 +78,10 @@ class NoteService {
     }
     public function update(int $id,string $title, string $content, string $userId,int $category,int $pinFlag,int $pubFlag,string $tags,string $uuid,string $shareInfo){
         try {
-            #$now = new DateTime();
-            #$now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
-            #$date = $now->format('Y-m-d H:i:s');
-            $date=date("Y-m-d H:i:s");
+            $now = new DateTime();
+            $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
+            $date = $now->format('Y-m-d H:i:s');
+            #$date=date("Y-m-d H:i:s");
             $note = $this->mapper->find($id,$userId);
             $note->setTitle($title);
             $note->setContent($content);

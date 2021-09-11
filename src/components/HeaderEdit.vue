@@ -195,7 +195,7 @@ export default {
 						if (result.status === 201 || result.status === 204) {
 							this.fetchDirInfo()
 						} else {
-							console.info(result)
+							// console.info(result)
 
 						}
 
@@ -253,7 +253,7 @@ export default {
 						showSuccess(t('welcomapp', 'save Header'))
 					}
 				}).catch((e) => {
-					console.info(e)
+					// console.info(e)
 				})
 			} else {
 
@@ -270,8 +270,8 @@ export default {
 					}
 
 				}).catch((e) => {
-					console.info('postConfigErr')
-					console.info(e)
+					// console.info('postConfigErr')
+					// console.info(e)
 				})
 			}
 

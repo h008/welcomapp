@@ -61,8 +61,8 @@ export default {
 			return category
 		},
 		eyecatchUrls() {
-			console.info('eyecatch')
-			console.info(this.note.fileInfo)
+			// console.info('eyecatch')
+			// console.info(this.note.fileInfo)
 			if (!this.note.fileInfo || !this.note.fileInfo.length) {
 				return ['']
 			}

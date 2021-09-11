@@ -32,8 +32,8 @@ export default {
 		if (!note.category) { noteObj.category = 0 }
 		if (note.pubFlag && (!note.shareInfo || !note.shareInfo.match(/shareId/))) {
 			noteObj.pubFlag = 0
-		} else { noteObj.pubFlag = 1 }
-		if (!note.pinFlag) { noteObj.pinFlag = 0 } else { noteObj.pinFlag = 1 }
+		} else { noteObj.pubFlag = Number(note.pubFlag) }
+		if (!note.pinFlag) { noteObj.pinFlag = 0 } else { noteObj.pinFlag = Number(note.pinFlag) }
 		// if (!note.pin_flag) { note.pin_flag = false }
 		// if (!note.pub_flag) { note.pub_flag = false }
 		if (noteObj.id === -1) {
@@ -242,15 +242,15 @@ export default {
 
 	},
 		 fetchFileInfo(uuid, userId, userDir) {
-			 console.info('fetchFileInfo')
-		console.info('userDir')
-		console.info(userDir)
+			 // console.info('fetchFileInfo')
+		// console.info('userDir')
+		// console.info(userDir)
 
 			 if (!uuid) { return Promise.resolve([]) }
 		return axios.get(generateUrl(`/apps/welcomapp/getfiles/${uuid}`)).then((result) => {
-			console.info(result)
+			// console.info(result)
 			if (!result || !result.data || !result.data.length) {
-				console.info('nolength')
+				// console.info('nolength')
 				 return []
 			}
 			return result.data.map((elem) => {
@@ -302,7 +302,7 @@ export default {
 	},
 	// TODO
 	fetchNotes(user, propFilter) {
-		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: true, pinFlag: false }
+		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0 }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
 		const userGroups = user.groups
@@ -419,9 +419,9 @@ export default {
 // const value = JSON.stringify(params[key])
 // options += `${key}=${value}&`
 // } else {
-// console.info(key)
-// console.info(typeof params[key])
-// console.info(params[key])
+// //console.info(key)
+// //console.info(typeof params[key])
+// //console.info(params[key])
 // }
 // }
 // return options ? options.slice(0, -1) : options
@@ -544,8 +544,8 @@ const checkDirExist = async (path) => {
 		response = response.replace(/^\/remote.php\/dav\/files\//, '').replace(/\/$/, '')
 		return (response === path)
 	}).catch((e) => {
-		console.info('searchEror')
-		console.info(e)
+		// console.info('searchEror')
+		// console.info(e)
 		return false
 	})
 

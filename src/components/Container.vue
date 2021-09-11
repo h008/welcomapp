@@ -130,7 +130,7 @@ export default {
 		},
 		pinFilter() {
 			const tmpFilter = Object.assign({}, this.localFilter)
-			return Object.assign(tmpFilter, { pinFlag: true })
+			return Object.assign(tmpFilter, { pinFlag: 1 })
 		},
 		localFilter: {
 			get() {
@@ -312,11 +312,11 @@ export default {
 
 		},
 		fetchShareInfo(shareInfoStr, user) {
-			console.info('here')
+			// console.info('here')
 			if (shareInfoStr) {
 				const shareInfo = JSON.parse(shareInfoStr)
 				if (!shareInfo.length) {
-					console.info(shareInfo)
+					// console.info(shareInfo)
 
 				}
 				if (!user.groups?.length) { return '' }

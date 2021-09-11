@@ -124,7 +124,7 @@ export default {
 			containerMode: 'list',
 			users: [],
 			testData: null,
-			filter: { category: 0, pubFlag: true, pinFlag: false, offset: 0, limit: 0 },
+			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0 },
 			headerConfig: {},
 		}
 	},
@@ -178,13 +178,13 @@ export default {
 		async fetchUserData() {
 
 			axios.get(generateUrl('/apps/welcomapp/users')).then((result) => {
-				console.info(result.data)
+				// console.info(result.data)
 				this.user = result.data
 				if (this.user.id) {
 
 					/*
 					if (this.user.groups.includes('announce')) {
-						console.info(this.user)
+						//console.info(this.user)
 						Mymodules.fetchDirInfoOrCreate(`${this.user.id}/announce_${this.user.id}`).then(() => {
 							 axios.post('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result2) => {
 								const shareId = result2?.data?.ocs?.data?.id
@@ -192,15 +192,15 @@ export default {
 									this.$set(this.user, 'shareId', shareId)
 								}
 		 }).catch((e) => {
-								console.info('shareAPIerror')
+								//console.info('shareAPIerror')
 							 axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares', data, { headers: { 'OCS-APIRequest': true } }).then((result3) => {
 									const tmpArray = result3?.data?.ocs?.data
-									console.info(tmpArray)
+									//console.info(tmpArray)
 									if (tmpArray && tmpArray.length) {
 										const target = tmpArray.find((elem) => elem.file_target === `/announce_${this.user.id}`)
 										if (target) {
-											console.info('target')
-											console.info(target)
+											//console.info('target')
+											//console.info(target)
 											this.$set(this.user, 'shareId', target.id)
 
 										}
@@ -259,8 +259,8 @@ export default {
 					title: '新規アナウンス',
 					categories: 0,
 					content: '',
-					pinFlag: false,
-					pubFlag: false,
+					pinFlag: 0,
+					pubFlag: 0,
 
 					uuid: uuidv4(),
 					shareId: this.user.shareId,
@@ -297,12 +297,12 @@ export default {
 		},
 		changeCategory(categoryId) {
 			this.selectedCategory = categoryId
-			this.filter = { category: categoryId, pubFlag: true, pinFlag: false, offset: 0, limit: 10 }
+			this.filter = { category: categoryId, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10 }
 			this.changeMode('notes')
 		},
 		showDraft() {
 			this.selectedCategory = -1
-			this.filter = { category: 0, pubFlag: false, pinFlag: false, offset: 0, limit: 0 }
+			this.filter = { category: 0, pubFlag: 0, pinFlag: 0, offset: 0, limit: 0 }
 			this.changeMode('notes')
 		},
 	},
