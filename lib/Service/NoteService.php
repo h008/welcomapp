@@ -33,6 +33,17 @@ class NoteService {
         }
     }
     public function filter(int $category,int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,string $userId){
+        if(!$pinFlag){$pinFlag=0;}
+        if(!$pubFlag){$pubFlag=0;}
+        try{
+            $pinFlag=intval($pinFlag);
+            $pubFlag=intval($pubFlag);
+
+        }catch (Exception $e) {
+            $pinFlag=0;
+            $pubFlag=0;
+
+        }
         try{
             return $this->mapper->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$userId);
         } catch(Exception $e){
@@ -40,6 +51,17 @@ class NoteService {
         }
     }
     public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData,string $userId){
+        if(!$pinFlag){$pinFlag=0;}
+        if(!$pubFlag){$pubFlag=0;}
+        try{
+            $pinFlag=intval($pinFlag);
+            $pubFlag=intval($pubFlag);
+
+        }catch (Exception $e) {
+            $pinFlag=0;
+            $pubFlag=0;
+
+        }
         try{
             return $this->mapper->filtercount($category,$pubFlag,$pinFlag,$userData,$userId);
         } catch(Exception $e){

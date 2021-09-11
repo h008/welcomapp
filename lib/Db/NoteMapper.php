@@ -68,7 +68,7 @@ class NoteMapper extends QBMapper {
 			$qb->where($qb->expr()->orX(
 				$qb->expr()->eq('pub_flag', $qb->createNamedParameter(0,IQueryBuilder::PARAM_INT)),
 				$qb->expr()->isNull('pub_flag'),
-				$qb->expr()->eq('pub_flag','')
+				$qb->expr()->eq('pub_flag',$qb->createNamedParameter(''))
 
 			));
 			$qb->andWhere($qb->expr()->eq('user_id',$qb->createNamedParameter($userId)));
@@ -94,7 +94,7 @@ class NoteMapper extends QBMapper {
 			$orX = $qb->expr()->orX();
 			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
 			foreach($groups as $groupId ) {
-				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%\"gid\":\"'.$groupId.'\"%')));
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
 			}
 			$qb->andWhere($orX);
 		}
@@ -116,7 +116,7 @@ class NoteMapper extends QBMapper {
 			$qb->where($qb->expr()->orX(
 				$qb->expr()->eq('pub_flag', $qb->createNamedParameter(0,IQueryBuilder::PARAM_INT)),
 				$qb->expr()->isNull('pub_flag'),
-				$qb->expr()->eq('pub_flag','')
+				$qb->expr()->eq('pub_flag',$qb->createNamedParameter(''))
 			));
 			$qb->andWhere($qb->expr()->eq('user_id',$qb->createNamedParameter($userId)));
 		}else{
@@ -133,7 +133,7 @@ class NoteMapper extends QBMapper {
 			$orX = $qb->expr()->orX();
 			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
 			foreach($groups as $groupId ) {
-				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%\"gid\":\"'.$groupId.'\"%')));
+				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
 			}
 			$qb->andWhere($orX);
 		}
