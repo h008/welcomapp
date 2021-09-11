@@ -12,8 +12,6 @@ return [
 	],
 	'routes' => [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'note_api#preflighted_cors', 'url' => '/api/0.1/{path}',
-			'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']],
 		['name' => 'note#filter','url'=>'/filter','verb' =>'GET'],
 		['name' => 'note#filtercount','url'=>'/filtercount','verb' =>'GET'],
 		['name' => 'users#getAllUsers','url'=>'/getusers','verb' =>'GET'],

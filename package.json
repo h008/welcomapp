@@ -1,7 +1,7 @@
 {
 	"name": "welcomapp",
 	"description": "A simple Nextcloud app tutorial for building a notes app",
-	"version": "0.0.17",
+	"version": "0.0.18",
 	"author": "rockedcubeJPN <info@rockedcube.com>",
 	"contributors": [
 		"rockedcubeJPN <info@rockedcube.com>"
