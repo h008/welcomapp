@@ -46,7 +46,6 @@
 				</template>
 			</ListItem>
 		</ul>
-		{{ localListItems }}
 	</div>
 </template>
 <script>
