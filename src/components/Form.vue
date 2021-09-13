@@ -381,13 +381,15 @@ export default {
 			if (this.dirInfo.length) {
 				this.dirInfo.forEach((item) => {
 					const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
+					if (!item.isEyecatch || item.isEyecatch === 'false' || item.isEyecatch === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
+					if (!item.hasPreview || item.hasPreview === 'false' || item.hasPreview === 0) { item.hasPreview = 0 } else { item.hasPreview = 1 }
 					const data = {
 						id: item.fileId,
 						announceId: this.localNote.id,
 						filename: item.filename,
 						fileurl: this.localNote.uuid,
 						filetype: item.filetype || 'folder',
-						isEyecatch: item.isEyecatch || false,
+						isEyecatch: item.isEyecatch,
 						href: item.href2,
 						hasPreview: item.hasPreview,
 						updated,
