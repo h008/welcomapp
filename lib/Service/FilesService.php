@@ -1,14 +1,14 @@
 <?php
 namespace OCA\WelcomApp\Service;
 use Exception;
+use DateTime;
+use DateTimeZone;
 
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\WelcomApp\Db\Files;
 use OCA\WelcomApp\Db\FilesMapper;
-use DateTime;
-use DateTimeZone;
 
 class FilesService {
     private $mapper;
@@ -41,7 +41,7 @@ class FilesService {
         }
     }
     public function create(int $id,int $announceId,string $filename,string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,string $userId){
-        $now = new DateTime($updated);
+        $now = new DateTime();
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
         $date = $now->format('Y-m-d H:i:s');
         try {
@@ -58,9 +58,9 @@ class FilesService {
         $files->setFilename($filename);
         $files->setFileurl($fileurl);
         $files->setFiletype($filetype);
-        $files->setIsEyecatch($isEyecatch);
+        $files->setIsEyecatch($isEyecatch?1:0);
         $files->setHref($href);
-        $files->setHasPreview($hasPreview);
+        $files->setHasPreview($hasPreview?1:0);
         $files->setUpdated($date);
         $files->setUserId($userId);
         $files->setSize($size);
