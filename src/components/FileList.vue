@@ -1,29 +1,30 @@
 <template>
 	<div>
 		<ul v-if="fileInfo && fileInfo.length">
-			<ListItem v-for="file of fileInfo"
-				:key="file.href"
-				:avatar-size="24"
-				:no-margin="true"
-				:title="file.filename"
-				:bold="file.exist"
-				@click="openItem(file)">
-				<template slot="icon">
-					<Avatar v-if="!file.exist" icon-class="icon-filetype-file" />
-					<Avatar v-else-if="file.filetype=='folder'" icon-class="icon-folder" />
-					<Avatar v-else-if="file.filetype.search(/image/) !== -1 " icon-class="icon-picture" />
-					<Avatar v-else icon-class="icon-file" />
-				</template>
-				<template slot="actions">
-					<ActionLink v-if="!file.exist" icon="icon-folder" />
-					<ActionLink v-else-if="file.filetype=='folder'" icon="icon-folder" :href="downloadFile(file.id)" />
-					<ActionLink v-else
-						icon="icon-download"
-						:href="downloadFile(file.id)"
-						:download="file.filename" />
-					<ActionLink icon="icon-external" :href="file.userRef" />
-				</template>
-			</ListItem>
+			<span v-for="file of fileInfo" :key="file.herf">
+				<ListItem v-if="canShowItem(file)"
+					:avatar-size="24"
+					:no-margin="true"
+					:title="file.filename"
+					:bold="file.exist"
+					@click="openItem(file)">
+					<template slot="icon">
+						<Avatar v-if="!file.exist" icon-class="icon-filetype-file" />
+						<Avatar v-else-if="file.filetype=='folder'" icon-class="icon-folder" />
+						<Avatar v-else-if="file.filetype.search(/image/) !== -1 " icon-class="icon-picture" />
+						<Avatar v-else icon-class="icon-file" />
+					</template>
+					<template slot="actions">
+						<ActionLink v-if="!file.exist" icon="icon-folder" />
+						<ActionLink v-else-if="file.filetype=='folder'" icon="icon-folder" :href="downloadFile(file.id)" />
+						<ActionLink v-else
+							icon="icon-download"
+							:href="downloadFile(file.id)"
+							:download="file.filename" />
+						<ActionLink icon="icon-external" :href="file.userRef" />
+					</template>
+				</ListItem>
+			</span>
 		</ul>
 	</div>
 </template>
@@ -46,6 +47,9 @@ export default {
 			type: Array,
 			default: () => { return [] },
 		},
+	},
+	computed: {
+
 	},
 	methods: {
 		getFileName(href) {
@@ -72,6 +76,15 @@ export default {
 
 			}
 
+		},
+		canShowItem(note) {
+			if (Number(note.is_eyecatch) === 1) {
+				return false
+			}
+			if (note.filename === `.announce_${note.fileurl}`) {
+				return false
+			}
+			return true
 		},
 	},
 
