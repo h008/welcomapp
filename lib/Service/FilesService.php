@@ -84,15 +84,15 @@ class FilesService {
         } catch(Exception $e ) {
             $files=new Files();
             $flag=false;
-
         } 
+        
             $files->setAnnounceId($announceId);
             $files->setFilename($filename);
             $files->setFileurl($fileurl);
             $files->setFiletype($filetype);
-            $files->setIsEyecatch($isEyecatch);
+            $files->setIsEyecatch($isEyecatch?1:0);
             $files->setHref($href);
-            $files->setHasPreview($hasPreview);
+            $files->setHasPreview($hasPreview?1:0);
             $files->setUpdated($date);
             $files->setSize($size);
             $files->setUserId($userId);
@@ -100,7 +100,7 @@ class FilesService {
             if($flag){
                 return $this->mapper->update($files);
             }else{
-               $files->setCreated($date); 
+               //$files->setCreated($date); 
                 return $this->mapper->insert($files);
             }
         } catch(Exception $e){
