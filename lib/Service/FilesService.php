@@ -80,6 +80,12 @@ class FilesService {
         $date = $now->format('Y-m-d H:i:s');
         try {
             $files = $this->mapper->find($id);
+            $flag = true;
+        } catch(Exception $e ) {
+            $files=new Files();
+            $flag=false;
+
+        } 
             $files->setAnnounceId($announceId);
             $files->setFilename($filename);
             $files->setFileurl($fileurl);
@@ -90,7 +96,12 @@ class FilesService {
             $files->setUpdated($date);
             $files->setSize($size);
             $files->setUserId($userId);
-            return $this->mapper->update($files);
+        try {
+            if($flag){
+                return $this->mapper->update($files);
+            }else{
+                return $this->mapper->insert($files);
+            }
         } catch(Exception $e){
             $this->handleException($e);
         }
