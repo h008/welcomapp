@@ -395,12 +395,13 @@ export default {
 						shareId: this.user.shareId,
 
 					}
-					// console.info(data)
+					 console.info(data)
+
 					axios.post(generateUrl('/apps/welcomapp/files'), data).then((result) => {
-						// console.info('saveFile')
-						// console.info(result)
+						 console.info('saveFile')
+						 console.info(result)
 					}).catch((e) => {
-						// console.info('saveFileError')
+						 console.info('saveFileError')
 						console.error(e)
 					})
 
