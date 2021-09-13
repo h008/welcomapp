@@ -380,32 +380,38 @@ export default {
 		saveFilesInfo() {
 			if (this.dirInfo.length) {
 				this.dirInfo.forEach((item) => {
-					const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
-					if (!item.isEyecatch || item.isEyecatch === 'false' || item.isEyecatch === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
-					if (!item.hasPreview || item.hasPreview === 'false' || item.hasPreview === 0) { item.hasPreview = 0 } else { item.hasPreview = 1 }
-					const data = {
-						id: item.fileId,
-						announceId: this.localNote.id,
-						filename: item.filename,
-						fileurl: this.localNote.uuid,
-						filetype: item.filetype || 'folder',
-						isEyecatch: item.isEyecatch,
-						href: item.href2,
-						hasPreview: item.hasPreview,
-						updated,
-						size: item.size,
-						shareId: this.user.shareId,
+					if (item.filename === `.announce_${item.fileurl}`) {
+						console.info('parentFolder')
 
-					}
+					} else {
+
+						const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
+						if (!item.isEyecatch || item.isEyecatch === 'false' || item.isEyecatch === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
+						if (!item.hasPreview || item.hasPreview === 'false' || item.hasPreview === 0) { item.hasPreview = 0 } else { item.hasPreview = 1 }
+						const data = {
+							id: item.fileId,
+							announceId: this.localNote.id,
+							filename: item.filename,
+							fileurl: this.localNote.uuid,
+							filetype: item.filetype || 'folder',
+							isEyecatch: item.isEyecatch,
+							href: item.href2,
+							hasPreview: item.hasPreview,
+							updated,
+							size: item.size,
+							shareId: this.user.shareId,
+
+						}
 					 console.info(data)
 
-					axios.post(generateUrl('/apps/welcomapp/files'), data).then((result) => {
+						axios.post(generateUrl('/apps/welcomapp/files'), data).then((result) => {
 						 console.info('saveFile')
 						 console.info(result)
-					}).catch((e) => {
+						}).catch((e) => {
 						 console.info('saveFileError')
-						console.error(e)
-					})
+							console.error(e)
+						})
+					}
 
 				}
 				)
