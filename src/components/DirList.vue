@@ -107,8 +107,14 @@ export default {
 	},
 	methods: {
 		removeFile(file) {
-			Mymodules.removeFile(file)
-			this.localListItems = this.localListItems.filter((item) => item.fileId !== file.fileId)
+			Mymodules.removeFile(file).then((result) => {
+				console.info(result)
+				this.localListItems = this.localListItems.filter((item) => item.fileId !== file.fileId)
+			}).catch((e) => {
+				console.info('cannot remove file')
+				console.error(e)
+
+			})
 
 		},
 		removeDb(file) {

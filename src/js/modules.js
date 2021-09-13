@@ -168,7 +168,7 @@ export default {
 
 	},
 	removeFile(file) {
-		if (!file || !file.url) { return Promise.resolve() }
+		if (!file || !file.href) { return Promise.resolve() }
 		return axios.delete(file.href).then(() => {
 			if (!file.fileId) { return Promise.resolve() }
 			return this.removeDataOfFile(file.fileId)
