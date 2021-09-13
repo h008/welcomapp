@@ -380,10 +380,11 @@ export default {
 		saveFilesInfo() {
 			if (this.dirInfo.length) {
 				this.dirInfo.forEach((item) => {
-					if (item.filename === `.announce_${item.fileurl}`) {
+					if (item.filename === `.announce_${this.localNote.uuid}`) {
 						console.info('parentFolder')
 
 					} else {
+						console.info(item.filename)
 
 						const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
 						if (!item.isEyecatch || item.isEyecatch === 'false' || item.isEyecatch === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
