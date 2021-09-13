@@ -2,7 +2,6 @@
 	<div>
 		<ul v-if="fileInfo && fileInfo.length">
 			<span v-for="file of fileInfo" :key="file.herf">
-				{{ file }}
 				<ListItem v-if="canShowItem(file)"
 					:avatar-size="24"
 					:no-margin="true"
