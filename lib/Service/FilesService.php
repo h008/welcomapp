@@ -75,7 +75,7 @@ class FilesService {
         }
     }
     public function update(int $id,int $announceId,string $filename, string $fileurl,string $filetype,bool $isEyecatch,string $href,bool $hasPreview,string $updated,int $size,string $userId){
-        $now = new DateTime($updated);
+        $now = new DateTime();
         $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
         $date = $now->format('Y-m-d H:i:s');
         try {
@@ -100,6 +100,7 @@ class FilesService {
             if($flag){
                 return $this->mapper->update($files);
             }else{
+               $files->setCreated($date); 
                 return $this->mapper->insert($files);
             }
         } catch(Exception $e){
