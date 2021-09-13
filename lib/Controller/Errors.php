@@ -15,4 +15,12 @@ trait Errors {
             return new DataResponse($message,Http::STATUS_NO_CONTENT);
             }
         }
+    protected function handleUpsert(Closure $updateCallback,Closure $insertCallback) {
+        try {
+            return new DataResponse($updateCallback());
+        } catch (NotFoundException $e){
+            $message = ['message' => $e ->getMessage()];
+            return new DataResponse($insertCallback());
+            }
+        }
 }

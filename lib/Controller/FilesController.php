@@ -8,6 +8,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
+
 class FilesController extends Controller
 {
 	/** @var FilesService */
@@ -92,9 +93,15 @@ class FilesController extends Controller
 
 
 	): DataResponse {
-		return $this->handleNotFound(function () use ($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size) {
-			return $this->service->update($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$this->userId);
-		});
+		return $this->handleUpsert(
+			function () use ($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size) {
+				return $this->service->update($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$this->userId);
+			},
+			function () use ($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size) {
+				return $this->service->create($id, $announceId, $filename,$fileurl,$filetype,$isEyecatch,$href,$hasPreview,$updated,$size,$this->userId);
+			}
+	
+	);
 	}
 
 	/**
