@@ -57,7 +57,7 @@ export default {
 
 		summary() {
 			if (this.note.content) {
-				const str = this.note.content.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
+				const str = this.note.content.replace(/<("[^"]*"|'[^']*'|[^'">])*>|\s|&nbsp/g, '')
 
 				return str.substr(0, 250)
 			} else {

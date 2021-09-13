@@ -167,7 +167,7 @@ export default {
 		},
 		striptag(html) {
 			if (html) {
-				const str = html.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
+				const str = html.replace(/<("[^"]*"|'[^']*'|[^'">])*>|\s|&nbsp;/g, '')
 
 				return str.substr(0, 100)
 			} else {
