@@ -266,6 +266,8 @@ export default {
 				 return []
 			}
 			return result.data.map((elem) => {
+				if (elem.isEyecatch && (elem.isEyecatch === '0' || elem.isEyecatch === 'false')) { elem.isEyecatch = 0 }
+				if (elem.hasPreview && (elem.hasPreview === '0' || elem.hasPreview === 'false')) { elem.hasPreview = false }
 				if (elem.filetype === 'folder') {
 					elem.userRef = generateUrl(`/f/${elem.id}`)
 

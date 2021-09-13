@@ -387,8 +387,8 @@ export default {
 						console.info(item.filename)
 
 						const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
-						if (!item.isEyecatch || item.isEyecatch === 'false' || item.isEyecatch === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
-						if (!item.hasPreview || item.hasPreview === 'false' || item.hasPreview === 0) { item.hasPreview = 0 } else { item.hasPreview = 1 }
+						if (!item.isEyecatch || item.isEyecatch === 'false' || Number(item.isEyecatch) === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
+						if (!item.hasPreview || item.hasPreview === 'false' || Number(item.hasPreview) === 0) { item.hasPreview = 0 } else { item.hasPreview = 1 }
 						const data = {
 							id: item.fileId,
 							announceId: this.localNote.id,
