@@ -83,13 +83,13 @@ export default {
 			if (note.filename === `.announce_${note.fileurl}`) {
 				return false
 			}
-			if (!note.is_eycatch || note.is_eyecatch === 0 || note.is_eyecatch === '0' || note.is_eyecatch === 'false') {
+			if (!note.is_eyecatch || note.is_eyecatch === 0 || note.is_eyecatch === '0' || note.is_eyecatch === 'false') {
 				return true
 			}
 			if (note.is_eyecatch || note.is_eyecatch === 1 || note.is_eyecatch === '1' || note.is_eyecatch === 'true') {
 				return false
 			}
-			return false
+			return true
 		},
 	},
 
