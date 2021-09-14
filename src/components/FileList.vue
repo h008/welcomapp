@@ -84,7 +84,7 @@ export default {
 			if (!note.is_eycatch || Number(note.is_eyecatch) === 0 || note.is_eyecatch === 'false') {
 				return true
 			}
-			if (Number(note.is_eyecatch) === 1 || note.is_eyecatch === 'true') {
+			if (note.is_eyecatch || Number(note.is_eyecatch) === 1 || note.is_eyecatch === 'true') {
 				return false
 			}
 			return true
