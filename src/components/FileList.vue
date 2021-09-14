@@ -78,7 +78,10 @@ export default {
 
 		},
 		canShowItem(note) {
-			if (Number(note.is_eyecatch) === 1) {
+			if (!note.is_eyecatch || Number(note.is_eyecatch) === 0 || note.is_eyecatch === 'false') {
+				return true
+			}
+			if (Number(note.is_eyecatch) === 1 || note.is_eyecatch) {
 				return false
 			}
 			if (note.filename === `.announce_${note.fileurl}`) {
