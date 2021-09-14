@@ -89,7 +89,7 @@ export default {
 			if (note.is_eyecatch || note.is_eyecatch === 1 || note.is_eyecatch === '1' || note.is_eyecatch === 'true') {
 				return false
 			}
-			return true
+			return false
 		},
 	},
 
