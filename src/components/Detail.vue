@@ -66,7 +66,10 @@ export default {
 			if (!this.note.fileInfo || !this.note.fileInfo.length) {
 				return ['']
 			}
-			return this.note.fileInfo.filter((file) => file.is_eyecatch).map((element) => element.userRef)
+			return this.note.fileInfo.filter((file) => {
+				if (!file.is_eyecatch || (file.is_eyecatch && (file.is_eyecatch === 0 || file.is_eyecatch === '0' || file.is_eyecatch === 'false' || file.is_eyecatch === ''))) { return false } else { return true }
+
+			}).map((element) => element.userRef)
 
 		},
 		eyecatchUrl() {

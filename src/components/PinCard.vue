@@ -72,7 +72,9 @@ export default {
 			if (!this.note.fileInfo || !this.note.fileInfo.length) {
 				return ''
 			}
-			const fileInfo = this.note.fileInfo.find((item) => item.is_eyecatch)
+			const fileInfo = this.note.fileInfo.find((item) => {
+				if (!item.is_eyecatch || (item.is_eyecatch && (item.is_eyecatch === 0 || item.is_eyecatch === '0' || item.is_eyecatch === 'false' || item.is_eyecatch === ''))) { return false } else { return true }
+			})
 			if (!fileInfo) { return '' }
 			return fileInfo.userRef || ''
 		},
