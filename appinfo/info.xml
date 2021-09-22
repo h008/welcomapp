@@ -10,7 +10,9 @@
     <author mail="info@rockedcube.com" >RockedcubeJPN</author>
     <namespace>WelcomApp</namespace>
     <category>tools</category>
-    <bugs>https://rockedcube.com</bugs>
+    <website>https://github.com/h008/nextcloud-welcomapp</website>
+    <bugs>https://github.com/h008/nextcloud-welcomapp/issues</bugs>
+    <repository type="git">https://github.com/h008/nextcloud-welcomapp.git</repository>
     <dependencies>
         <nextcloud min-version="15" max-version="22"/>
     </dependencies>
