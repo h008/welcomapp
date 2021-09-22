@@ -11,7 +11,12 @@
 				<h2 v-if="categorySeal" :style="{'color':categorySeal.color ,'font-weight':600}">
 					{{ categorySeal.category_name }}
 				</h2>
-				<TagBadges :tags="tags" :display-tag-ids="note.tags" />
+				<div class="tags__flex">
+					<TagBadges :tags="tags" :display-tag-ids="note.tags" />
+					<div v-if="hasFiles" class="pincard__attachment">
+						<AttachmentIcon title="添付あり" />添付あり
+					</div>
+				</div>
 				<div v-if="note && note.userInfo" class="infobox">
 					<div>作成:{{ note.created }}</div>
 					<div>更新:{{ note.updated }}</div>
@@ -20,6 +25,7 @@
 				<div class="pincard__text">
 					{{ summary }}
 				</div>
+
 				<div class="pincard__link">
 					<a @click="showDetail">詳しく見る</a>
 				</div>
@@ -29,10 +35,12 @@
 </template>
 <script>
 import TagBadges from './TagBadges.vue'
+import AttachmentIcon from 'vue-material-design-icons/Attachment.vue'
 export default {
 	name: 'PinCard',
 	components: {
 		TagBadges,
+		AttachmentIcon,
 	},
 	props: {
 		note: {
@@ -78,6 +86,13 @@ export default {
 			if (!fileInfo) { return '' }
 			return fileInfo.userRef || ''
 		},
+		hasFiles() {
+			if (!this.note.fileInfo || !this.note.fileInfo.length) {
+				return false
+			}
+			const fileInfo = this.note.fileInfo.find((item) => (!item.is_eyecatch || Number(item.is_eyecatch) !== 1))
+			if (fileInfo) { return true } else { return false }
+		},
 	},
 	watch: {
 	},
@@ -91,6 +106,11 @@ export default {
 }
 </script>
 <style scoped>
+.tags__flex{
+	width:100%;
+	display:flex;
+}
+
 .pincard__wrapper{
 	width: 350px;
 	min-width:350px;
@@ -169,5 +189,11 @@ export default {
 
 .infobox{
 	text-align: end;
+}
+
+.pincard__attachment{
+	display:flex;
+	width:100%;
+	text-align:end;
 }
 </style>

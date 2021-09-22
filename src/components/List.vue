@@ -12,9 +12,16 @@
 					:details="item.updated"
 					@click.stop="showDetail(item)">
 					<template #subtitle>
-						<TagBadges :tags="tags" :display-tag-ids="item.tags" />
-						<div>
-							{{ striptag(item.content) }}
+						<div class="d-block">
+							<div class="d-block">
+								{{ striptag(item.content) }}
+							</div>
+							<div class="d-flex">
+								<TagBadges :tags="tags" :display-tag-ids="item.tags" />
+								<div v-if="hasFiles(item)" class="list__attachment">
+									<AttachmentIcon title="添付あり" />添付あり
+								</div>
+							</div>
 						</div>
 					</template>
 					<template #actions>
@@ -49,6 +56,7 @@ import Loader from './Loader.vue'
 import TagBadges from './TagBadges.vue'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
+import AttachmentIcon from 'vue-material-design-icons/Attachment.vue'
 import Modules from '../js/modules'
 import { showError } from '@nextcloud/dialogs'
 export default {
@@ -60,6 +68,7 @@ export default {
 		EmptyContent,
 		Loader,
 		TagBadges,
+		AttachmentIcon,
 	},
 	props: {
 		notes: {
@@ -146,6 +155,13 @@ export default {
 
 	},
 	methods: {
+		hasFiles(note) {
+			if (!note.fileInfo || !note.fileInfo.length) {
+				return false
+			}
+			const fileInfo = note.fileInfo.find((item) => (!item.is_eyecatch || Number(item.is_eyecatch) !== 1))
+			if (fileInfo) { return true } else { return false }
+		},
 		canAnnounce(item) {
 			if (!this.user || !this.user.groups) { return false }
 			return this.user.groups.includes('announce') && item.userId === this.user.id
@@ -218,6 +234,10 @@ export default {
 	float:  left;
 }
 
+.d-block{
+	display:block;
+}
+
 .title{
 	margin-inline:8px;
 	text-align:start;
@@ -241,5 +261,11 @@ export default {
 .updated{
 	text-align: end;
 	width:20ch;
+}
+
+.list__attachment{
+	display:flex;
+	width:100%;
+	text-align:end;
 }
 </style>
