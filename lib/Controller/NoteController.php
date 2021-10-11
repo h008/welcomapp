@@ -62,21 +62,23 @@ class NoteController extends Controller
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filter(int $category,int $offset ,int $limit,int $pubFlag,int $pinFlag): DataResponse
+	public function filter(int $category,int $offset ,int $limit,int $pubFlag,int $pinFlag,string $tags="all"): DataResponse
 	{
 $userData=$this->getUserData($this->userId);
-		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag,$userData) {
-			return $this->service->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$this->userId);
+$tagArray=explode(',',$tags);
+		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$tagArray) {
+			return $this->service->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$tagArray,$this->userId);
 		});
 	}
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filtercount(int $category,int $pubFlag,int $pinFlag)
+	public function filtercount(int $category,int $pubFlag,int $pinFlag,string $tags)
 	{
 $userData=$this->getUserData($this->userId);
-		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag,$userData) {
-			return $this->service->filtercount($category,$pubFlag,$pinFlag,$userData,$this->userId);
+$tagArray=explode(',',$tags);
+		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag,$userData,$tagArray) {
+			return $this->service->filtercount($category,$pubFlag,$pinFlag,$userData,$tagArray,$this->userId);
 		});
 	}
 

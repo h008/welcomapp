@@ -32,7 +32,7 @@ class NoteService {
             $this->handleException($e);
         }
     }
-    public function filter(int $category,int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,string $userId){
+    public function filter(int $category,int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,array $tagArray,string $userId){
         if(!$pinFlag){$pinFlag=0;}
         if(!$pubFlag){$pubFlag=0;}
         try{
@@ -45,12 +45,12 @@ class NoteService {
 
         }
         try{
-            return $this->mapper->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$userId);
+            return $this->mapper->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$tagArray,$userId);
         } catch(Exception $e){
             $this->handleException($e);
         }
     }
-    public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData,string $userId){
+    public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData,array $tagArray,string $userId){
         if(!$pinFlag){$pinFlag=0;}
         if(!$pubFlag){$pubFlag=0;}
         try{
@@ -63,7 +63,7 @@ class NoteService {
 
         }
         try{
-            return $this->mapper->filtercount($category,$pubFlag,$pinFlag,$userData,$userId);
+            return $this->mapper->filtercount($category,$pubFlag,$pinFlag,$userData,$tagArray,$userId);
         } catch(Exception $e){
             $this->handleException($e);
         }

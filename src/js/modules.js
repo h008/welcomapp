@@ -316,7 +316,7 @@ export default {
 	},
 	// TODO
 	fetchNotes(user, propFilter) {
-		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0 }
+		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0, tags: 'all' }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
 		const userGroups = user.groups

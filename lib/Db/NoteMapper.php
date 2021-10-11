@@ -7,6 +7,7 @@ use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
+use DoctrineExtensions\Query\Mysql\FindInSet;
 
 class NoteMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
@@ -53,7 +54,8 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filter(int $category, int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,string $userId): array {
+	public function filter(int $category, int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,array $tagArray,string $userId): array {
+	//$config->addCustomStringFunction('FINDINSET','DoctrineExtentions\Query\MySql\FindInSet');	
 		/* @var $qb1 IQueryBuilder */
 		 //$qb1= $this->db->getQueryBuilder();
  //$qb1->select('*')
@@ -98,6 +100,15 @@ class NoteMapper extends QBMapper {
 			}
 			$qb->andWhere($orX);
 		}
+		if($tagArray[0]!="all"){
+			$orX=$qb->expr()->orX();
+			foreach($tagArray as $tagId) {
+				$orX->add(' FIND_IN_SET ('. (int) $tagId. ',tags ) ');
+			}
+			$qb->andWhere($orX );
+			
+		}
+		//$qb->andWhere('FindInSet("1,2,3",1)');
 
 		return $this->findEntities($qb);
 	}
@@ -107,7 +118,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData ,string $userId): int {
+	public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData ,array $tagArray,string $userId): int {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
@@ -136,6 +147,14 @@ class NoteMapper extends QBMapper {
 				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
 			}
 			$qb->andWhere($orX);
+		}
+		if($tagArray[0]!="all"){
+			$orX2=$qb->expr()->orX();
+			foreach($tagArray as $tagId) {
+				$orX2->add(' FIND_IN_SET ('.(int) $tagId. ',tags ) ');
+			}
+			$qb->andWhere($orX2 );
+			
 		}
 		//$count =$this-db->excuteQuery($qb);
 		//return $count;

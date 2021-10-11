@@ -1,6 +1,7 @@
 <template>
 	<div id="content" class="app-welcomapp">
 		<AppNavigation>
+			<TagSelector :tags="tags" :filter.sync="filter" />
 			<AppNavigationItem
 				v-if="!loading"
 				title="新着順"
@@ -94,6 +95,7 @@ import Container from './components/Container.vue'
 import CategorySetting from './components/CategorySetting.vue'
 import TagSetting from './components/TagSetting.vue'
 import HeaderEdit from './components/HeaderEdit.vue'
+import TagSelector from './components/TagSelector.vue'
 import Mymodules from './js/modules'
 
 export default {
@@ -107,6 +109,7 @@ export default {
 		CategorySetting,
 		TagSetting,
 		HeaderEdit,
+		TagSelector,
 	},
 	data() {
 		return {
@@ -124,7 +127,7 @@ export default {
 			containerMode: 'list',
 			users: [],
 			testData: null,
-			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0 },
+			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all' },
 			headerConfig: {},
 		}
 	},
@@ -297,12 +300,26 @@ export default {
 		},
 		changeCategory(categoryId) {
 			this.selectedCategory = categoryId
-			this.filter = { category: categoryId, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10 }
+			const tmpFilter = Object.assign({}, this.filter)
+			tmpFilter.category = categoryId
+			tmpFilter.pubFlag = 1
+			tmpFilter.pinFlag = 0
+			tmpFilter.offset = 0
+			tmpFilter.limit = 10
+			// const tmpFilter = Object.assign(this.filter, { category: categoryId, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10 })
+			this.filter = tmpFilter
 			this.changeMode('notes')
 		},
 		showDraft() {
 			this.selectedCategory = -1
-			this.filter = { category: 0, pubFlag: 0, pinFlag: 0, offset: 0, limit: 0 }
+			const tmpFilter = Object.assign({}, this.filter)
+			tmpFilter.category = 0
+			tmpFilter.pubFlag = 0
+			tmpFilter.pinFlag = 0
+			tmpFilter.offset = 0
+			tmpFilter.limit = 0
+			// const tmpFilter = Object.assign(this.filter, { category: 0, pubFlag: 0, pinFlag: 0, offset: 0, limit: 0 })
+			this.filter = tmpFilter
 			this.changeMode('notes')
 		},
 	},

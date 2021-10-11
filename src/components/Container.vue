@@ -10,7 +10,7 @@
 			<div v-else>
 				<h2>カテゴリー:{{ title }}</h2>
 				<PinList
-					:filter="pinFilter"
+					:filter.sync="pinFilter"
 					:user="user"
 					:categories="categories"
 					:tags="tags"
@@ -317,7 +317,6 @@ export default {
 				const shareInfo = JSON.parse(shareInfoStr)
 				if (!shareInfo.length) {
 					// console.info(shareInfo)
-
 				}
 				if (!user.groups?.length) { return '' }
 				const shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]

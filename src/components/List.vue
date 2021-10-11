@@ -168,7 +168,6 @@ export default {
 		},
 		fetchNotes() {
 			this.loading = true
-			// console.info('list')
 			Modules.fetchNotes(this.user, this.filter).then((result) => {
 				// console.info(result)
 				if (result && result.data && result.data.length) {
