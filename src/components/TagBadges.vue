@@ -2,7 +2,7 @@
 	<div class="tagbadge__wrapper">
 		<div v-for="tag of displayTags" :key="`tagbd__${tag.id}`">
 			<span class="tagbadge" :style="{'background-color':tag.color}">
-				<span class="tagtext" :styele="{'color':tag.color}">{{ tag.tag_name }}</span>
+				<span class="tagtext" :style="{'color':tag.color}">{{ tag.tag_name }}</span>
 			</span>
 			<div />
 		</div>
