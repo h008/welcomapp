@@ -139,7 +139,6 @@ export default {
 	padding:3px 6px;
 	margin-right:8px;
 	margin-left:1px;
-	font-size:75%;
 	border-radius:6px;
 	box-shadow:0 0 3px #ddd;
 	white-space:nowrap;
