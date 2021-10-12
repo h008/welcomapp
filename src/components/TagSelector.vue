@@ -4,7 +4,7 @@
 		<div class="tagbadge__wrapper">
 			<div v-for="tag of localTagList" :key="`tagbd__${tag.id}`" @click="toggle(tag)">
 				<span class="tagbadge" :style="{'background-color':tag.color}">
-					<span class="tagtext" :style="{'color':tag.color}">{{ tag.tag_name }}</span>
+					<span class="tagtext" :style="{'color':black}">{{ tag.tag_name }}</span>
 				</span>
 				<div />
 			</div>
