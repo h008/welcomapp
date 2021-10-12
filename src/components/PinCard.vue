@@ -193,7 +193,8 @@ export default {
 
 .pincard__attachment{
 	display:flex;
-	width:100%;
 	text-align:end;
+	vertical-align: middle;
+
 }
 </style>

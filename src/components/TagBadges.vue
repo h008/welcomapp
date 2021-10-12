@@ -50,5 +50,7 @@ export default {
 
 .tagtext{
 	filter:invert(100%) grayscale(100%) contrast(100);
+	font-size: medium;
+	font-weight: bold;
 }
 </style>
