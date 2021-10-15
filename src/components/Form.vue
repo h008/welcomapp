@@ -707,15 +707,19 @@ label {
 }
 @font-face{
 	font-family:'tinymce';
-	src:url('http://localhost/fonts/tinymce.eot');
-	src:url('http://localhost/fonts/tinymce.eot?#iefix') format('embedded-opentype'),url('http://localhost/fonts/tinymce.woff') format('woff'),url('http://localhost/fonts/tinymce.ttf') format('truetype'),url('http://localhost/fonts/tinymce.svg#tinymce') format('svg');
+	src:url('https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.6/skins/lightgray/fonts/tinymce.eot');
+	src:
+		url('https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.6/skins/lightgray/fonts/tinymce.eot?#iefix') format('embedded-opentype'),
+		url('https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.6/skins/lightgray/fonts/tinymce.woff') format('woff'),
+		url('https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.6/skins/lightgray/fonts/tinymce.ttf') format('truetype'),
+		url('https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.6/skins/lightgray/fonts/tinymce.svg#tinymce') format('svg');
 	font-weight:normal;
 	font-style:normal
 }
 @font-face{
 	font-family:'tinymce-small';
-	src:url('http://localhost/fonts/tinymce-small.eot');
-	src:url('http://localhost/fonts/tinymce-small.eot?#iefix') format('embedded-opentype'),url('http://localhost/fonts/tinymce-small.woff') format('woff'),url('http://localhost/fonts/tinymce-small.ttf') format('truetype'),url('http://localhost/fonts/tinymce-small.svg#tinymce') format('svg');
+	src:url('http://127.0.0.1/fonts/tinymce-small.eot');
+	src:url('http://127.0.0.1/fonts/tinymce-small.eot?#iefix') format('embedded-opentype'),url('http://127.0.0.1/fonts/tinymce-small.woff') format('woff'),url('http://127.0.0.1/fonts/tinymce-small.ttf') format('truetype'),url('http://127.0.0.1/fonts/tinymce-small.svg#tinymce') format('svg');
 	font-weight:normal;font-style:normal
 }
 
