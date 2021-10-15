@@ -705,4 +705,18 @@ label {
 	top:0px;
 	right:0px;
 }
+@font-face{
+	font-family:'tinymce';
+	src:url('http://localhost/fonts/tinymce.eot');
+	src:url('http://localhost/fonts/tinymce.eot?#iefix') format('embedded-opentype'),url('http://localhost/fonts/tinymce.woff') format('woff'),url('http://localhost/fonts/tinymce.ttf') format('truetype'),url('http://localhost/fonts/tinymce.svg#tinymce') format('svg');
+	font-weight:normal;
+	font-style:normal
+}
+@font-face{
+	font-family:'tinymce-small';
+	src:url('http://localhost/fonts/tinymce-small.eot');
+	src:url('http://localhost/fonts/tinymce-small.eot?#iefix') format('embedded-opentype'),url('http://localhost/fonts/tinymce-small.woff') format('woff'),url('http://localhost/fonts/tinymce-small.ttf') format('truetype'),url('http://localhost/fonts/tinymce-small.svg#tinymce') format('svg');
+	font-weight:normal;font-style:normal
+}
+
 </style>
