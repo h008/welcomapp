@@ -38,8 +38,8 @@ class NoteController extends Controller
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
-		$this->groupManager=$groupManager;
-		$this->userManager=$userManager;
+		$this->groupManager = $groupManager;
+		$this->userManager = $userManager;
 	}
 
 	/**
@@ -62,32 +62,36 @@ class NoteController extends Controller
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filter(int $category,int $offset ,int $limit,int $pubFlag,int $pinFlag,string $tags="all"): DataResponse
+	public function filter(int $category, int $offset, int $limit, int $pubFlag, int $pinFlag, string $tags = "all",bool $unread=false): DataResponse
 	{
-$userData=$this->getUserData($this->userId);
-$tagArray=explode(',',$tags);
-		 return $this->handleNotFound(function () use ($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$tagArray) {
-			return $this->service->filter($category,$offset,$limit,$pubFlag,$pinFlag,$userData,$tagArray,$this->userId);
+		$userData = $this->getUserData($this->userId);
+		$tagArray = explode(',', $tags);
+		return $this->handleNotFound(function () use ($category, $offset, $limit, $pubFlag, $pinFlag, $userData, $tagArray,$unread) {
+			return $this->service->filter($category, $offset, $limit, $pubFlag, $pinFlag, $userData, $tagArray,$unread, $this->userId);
 		});
 	}
 	/**
 	 * @NoAdminRequired
 	 */
-	public function filtercount(int $category,int $pubFlag,int $pinFlag,string $tags)
+	public function filtercount(int $category, int $pubFlag, int $pinFlag, string $tags,$unread=false)
 	{
-$userData=$this->getUserData($this->userId);
-$tagArray=explode(',',$tags);
-		 return $this->handleNotFound(function () use ($category,$pubFlag,$pinFlag,$userData,$tagArray) {
-			return $this->service->filtercount($category,$pubFlag,$pinFlag,$userData,$tagArray,$this->userId);
+		$userData = $this->getUserData($this->userId);
+		$tagArray = explode(',', $tags);
+		return $this->handleNotFound(function () use ($category, $pubFlag, $pinFlag, $userData, $tagArray,$unread) {
+			return $this->service->filtercount($category, $pubFlag, $pinFlag, $userData, $tagArray, $unread,$this->userId);
 		});
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, string $content,int $category,bool $pinFlag,bool $pubFlag,string $tags,string $uuid,string $shareInfo ): DataResponse
+	public function create(string $title, string $content, int $category, bool $pinFlag, bool $pubFlag, string $tags, string $uuid, string $shareInfo, string $readusers,bool $updateflg): DataResponse
 	{
-		if($pinFlag){$pinFlag=1;}else{$pinFlag=0;}
+		if ($pinFlag) {
+			$pinFlag = 1;
+		} else {
+			$pinFlag = 0;
+		}
 		return new DataResponse($this->service->create(
 			$title,
 			$content,
@@ -97,7 +101,9 @@ $tagArray=explode(',',$tags);
 			$pubFlag,
 			$tags,
 			$uuid,
-			$shareInfo
+			$shareInfo,
+			$readusers,
+			$updateflg,
 		));
 	}
 
@@ -113,10 +119,13 @@ $tagArray=explode(',',$tags);
 		bool $pubFlag,
 		string $tags,
 		string $uuid,
-		string $shareInfo
+		string $shareInfo,
+		string $readusers,
+		bool $updateflg,
+
 	): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareInfo) {
-			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags,$uuid,$shareInfo);
+		return $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags, $uuid, $shareInfo, $readusers,$updateflg) {
+			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags, $uuid, $shareInfo, $readusers,$updateflg);
 		});
 	}
 
@@ -137,20 +146,20 @@ $tagArray=explode(',',$tags);
 	 * @throws OCSException
 	 * @throws OCSNotFoundException
 	 */
-	protected function getUserData(string $userId){
-		$data=[];
+	protected function getUserData(string $userId)
+	{
+		$data = [];
 		$targetUserObject = $this->userManager->get($userId);
-		if($targetUserObject === null){
+		if ($targetUserObject === null) {
 			throw new OCSNotFoundException('User does not exist');
 		}
-		$groups=$this->groupManager->getUserGroups($targetUserObject);
-		$gids=[];
-		foreach($groups as $group) {
-			$gids[]=$group->getGID();
+		$groups = $this->groupManager->getUserGroups($targetUserObject);
+		$gids = [];
+		foreach ($groups as $group) {
+			$gids[] = $group->getGID();
 		}
-		$udata['id']=$targetUserObject->getUID();
-		$udata['groups']=$gids;
+		$udata['id'] = $targetUserObject->getUID();
+		$udata['groups'] = $gids;
 		return $udata;
-		
 	}
 }

@@ -16,6 +16,9 @@ export default {
 	 * @param {object} note Object
 	 */
 	saveNote: (note) => {
+		if (!note.readusers) {
+			note.readusers = ''
+		}
 		const noteObj = {
 			id: note.id,
 			title: note.title,
@@ -26,6 +29,8 @@ export default {
 			tags: note.tags,
 			uuid: note.uuid,
 			shareInfo: note.shareInfo,
+			readusers: note.readusers,
+			updateflg: true,
 
 		}
 		if (!note.id) { noteObj.id = -1 }
@@ -41,6 +46,28 @@ export default {
 		} else {
 			return updateNote(noteObj)
 		}
+	},
+	updateRead: (note) => {
+		if (!note.id) { return }
+		if (!note.readusers) {
+			note.readusers = ''
+		}
+		const noteObj = {
+			id: note.id,
+			title: note.title,
+			content: note.content,
+			category: note.category,
+			pinFlag: note.pinFlag,
+			pubFlag: note.pubFlag,
+			tags: note.tags,
+			uuid: note.uuid,
+			shareInfo: note.shareInfo,
+			readusers: note.readusers,
+			updateflg: false,
+
+		}
+		return updateNote(noteObj)
+
 	},
 	/**
 	 * Abort creating a new note
@@ -316,10 +343,10 @@ export default {
 	},
 	// TODO
 	fetchNotes(user, propFilter) {
-		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0, tags: 'all' }
+		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0, tags: 'all', unread: 0 }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
-		const userGroups = user.groups
+		 const userGroups = user.groups
 		return axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter }).then((result) => {
 			return result.data
 		}).catch((e) => {
@@ -327,6 +354,9 @@ export default {
 			showError(t('welcomapp', 'Could not fetch notes'))
 			return Promise.resolve(0)
 		}).then((total) => {
+			if (!total) {
+				return { total, data: [] }
+			}
 
 		 return axios.get(generateUrl('/apps/welcomapp/filter'), {
 				params: filter,
@@ -340,10 +370,22 @@ export default {
 
 				}
 				const addedData = data.map((note) => {
+					if (note.readusers) {
+						const readusersArray = note.readusers.split(',')
+						note.isRead = readusersArray.includes(user.id)
+
+					} else {
+						note.readusers = ''
+						note.isRead = false
+					}
 					if (note.userId && note.shareInfo) {
 						const shareInfos = JSON.parse(note.shareInfo)
 						const shareId = shareInfos.filter(
-							(shareInfo) => userGroups.includes(shareInfo.gid)
+							 (shareInfo) => {
+							  return (userGroups.includes(shareInfo.gid) || note.userId === user.id)
+
+							 }
+
 						).map((share) => share.shareId)[0]
 						let userDirP
 						if (!shareId) {
@@ -357,9 +399,21 @@ export default {
 
 						}
 						const userInfoP = this.autherInfo(note.userId)
-						return Promise.all([userInfoP, userDirP]).then(([userInfo, userDir]) => {
+						const allGroupsP = axios.get(generateUrl('/apps/welcomapp/getallgroups')).then((result) => {
+							if (result && result.data) {
+
+								return result.data.filter((group) => group.gid !== 'admin')
+							} else {
+								return []
+							}
+						})
+
+						return Promise.all([userInfoP, userDirP, allGroupsP]).then(([userInfo, userDir, allGroups]) => {
 							note.userInfo = userInfo
 							note.userDir = userDir
+							if (shareInfos) {
+								note.shareGroups = shareInfos.map((share) => allGroups.find((group) => group.id === share.gid))
+							}
 							if (note.content) {
 							// TODO
 								const targetStr = note.content
@@ -389,6 +443,7 @@ export default {
 				})
 
 				return Promise.all(addedData).then((data) => {
+					data = data.filter((el) => el.id)
 					return { total, data }
 
 				})

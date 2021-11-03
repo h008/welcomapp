@@ -11,6 +11,14 @@
 					:bold="true"
 					:details="item.updated"
 					@click.stop="showDetail(item)">
+					<template #icon>
+						<div v-if="!item.isRead" class="list__unread">
+							<UnreadIcon />
+						</div>
+						<div v-if="item.isRead" class="list__unread">
+							<ReadIcon />
+						</div>
+					</template>
 					<template #subtitle>
 						<div class="d-block">
 							<div class="d-block">
@@ -20,6 +28,10 @@
 								<TagBadges :tags="tags" :display-tag-ids="item.tags" />
 								<div v-if="hasFiles(item)" class="list__attachment">
 									<AttachmentIcon title="添付あり" />添付あり
+								</div>
+								<GroupBadge :groups="item.shareGroups" />
+								<div>
+									既読:{{ item.readusers.split(',').length }}
 								</div>
 							</div>
 						</div>
@@ -54,9 +66,13 @@ import ListItem from '@nextcloud/vue/dist/Components/ListItem'
 import Pagination from './Pagination.vue'
 import Loader from './Loader.vue'
 import TagBadges from './TagBadges.vue'
+import GroupBadge from './GroupBadge.vue'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
 import AttachmentIcon from 'vue-material-design-icons/Attachment.vue'
+import UnreadIcon from 'vue-material-design-icons/EmailAlert.vue'
+import ReadIcon from 'vue-material-design-icons/EmailOpenOutline.vue'
+
 import Modules from '../js/modules'
 import { showError } from '@nextcloud/dialogs'
 export default {
@@ -68,7 +84,10 @@ export default {
 		EmptyContent,
 		Loader,
 		TagBadges,
+		GroupBadge,
 		AttachmentIcon,
+		UnreadIcon,
+		ReadIcon,
 	},
 	props: {
 		notes: {
@@ -93,9 +112,17 @@ export default {
 		},
 		filter: {
 			type: Object,
-			default: () => { return {} },
+			default: () => {
+				return { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 1 }
+
+			},
+
 		},
 		tags: {
+			type: Array,
+			default: () => { return [] },
+		},
+		allGroups: {
 			type: Array,
 			default: () => { return [] },
 		},
@@ -169,7 +196,6 @@ export default {
 		fetchNotes() {
 			this.loading = true
 			Modules.fetchNotes(this.user, this.filter).then((result) => {
-				// console.info(result)
 				if (result && result.data && result.data.length) {
 					this.localListItem = result.data
 					this.totalNotesNumber = result.total
@@ -267,4 +293,5 @@ export default {
 	text-align:end;
 	vertical-align: middle;
 }
+
 </style>

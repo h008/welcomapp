@@ -7,6 +7,11 @@
 				title="新着順"
 				:icon="menuIcon(0)"
 				@click="changeCategory(0)" />
+			<AppNavigationItem
+				v-if="!loading"
+				title="未読"
+				:icon="menuIcon(9999)"
+				@click="selectUnread" />
 			<span v-if="!loading && categories">
 				<AppNavigationItem
 					v-for="category of categories"
@@ -61,10 +66,12 @@
 					:categories="categories"
 					:tags="tags"
 					:user="user"
-					:users="users"
+					:all-users="allUsers"
+					:all-groups="allGroups"
 					:mode.sync="containerMode"
 					:header-config="headerConfig"
-					:filter.sync="filter" />
+					:filter.sync="filter"
+					:selected-category="selectedCategory" />
 			</div>
 			<div v-if="mode=='categorySetting' && isAdmin">
 				<CategorySetting :categories.sync="categories" />
@@ -125,10 +132,11 @@ export default {
 			tags: [],
 			user: {},
 			containerMode: 'list',
-			users: [],
 			testData: null,
-			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all' },
+			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 1 },
 			headerConfig: {},
+			allUsers: [],
+			allGroups: [],
 		}
 	},
 	computed: {
@@ -154,8 +162,14 @@ export default {
 		this.fetchCategories()
 		this.fetchTags()
 
-		axios.get(generateUrl('/apps/welcomapp/getusers')).then((result) => {
-			this.users = result.data
+		axios.get(generateUrl('/apps/welcomapp/getallusers')).then((result) => {
+			this.allUsers = result.data
+		})
+		axios.get(generateUrl('/apps/welcomapp/getallgroups')).then((result) => {
+			if (result && result.data) {
+
+				this.allGroups = result.data.filter((group) => group.gid !== 'admin')
+			}
 		})
 		this.loading = false
 
@@ -306,9 +320,24 @@ export default {
 			tmpFilter.pinFlag = 0
 			tmpFilter.offset = 0
 			tmpFilter.limit = 10
+			tmpFilter.unread = 0
 			// const tmpFilter = Object.assign(this.filter, { category: categoryId, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10 })
 			this.filter = tmpFilter
 			this.changeMode('notes')
+		},
+		selectUnread() {
+			this.selectedCategory = 9999
+			const tmpFilter = Object.assign({}, this.filter)
+			tmpFilter.category = 0
+			tmpFilter.pubFlag = 1
+			tmpFilter.pinFlag = 0
+			tmpFilter.offset = 0
+			tmpFilter.limit = 10
+			tmpFilter.unread = 1
+			// const tmpFilter = Object.assign(this.filter, { category: categoryId, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10 })
+			this.filter = tmpFilter
+			this.changeMode('notes')
+
 		},
 		showDraft() {
 			this.selectedCategory = -1
@@ -318,6 +347,7 @@ export default {
 			tmpFilter.pinFlag = 0
 			tmpFilter.offset = 0
 			tmpFilter.limit = 0
+			tmpFilter.unread = 0
 			// const tmpFilter = Object.assign(this.filter, { category: 0, pubFlag: 0, pinFlag: 0, offset: 0, limit: 0 })
 			this.filter = tmpFilter
 			this.changeMode('notes')

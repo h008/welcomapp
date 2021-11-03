@@ -98,7 +98,7 @@
 							<Multiselect
 								v-model="selectedGroups"
 								:multiple="true"
-								:options="user.gdata"
+								:options="allGroups"
 								track-by="id"
 								:searchable="true"
 								label="name" />
@@ -172,7 +172,7 @@ export default {
 		note: {
 			type: Object,
 			default: () => {
-				return { id: -1, title: '', content: '', category: 0 }
+				return { id: -1, title: '', content: '', category: 0, readusers: '' }
 			},
 		},
 		dialog: {
@@ -194,6 +194,10 @@ export default {
 		user: {
 			type: Object,
 			default: () => { return {} },
+		},
+		allGroups: {
+			type: Array,
+			default: () => { return [] },
 		},
 	},
 	data() {
@@ -319,7 +323,7 @@ export default {
 			this.localNote = Object.assign({}, val)
 			// if (val.pubFlag !== 1) { this.localNote.pubFlag = false }
 			// if (val.pinFlag !== 1) { this.localNote.pinFlag = false }
-
+			if (!val.readusers) { val.readusers = '' }
 			if (val.category && this.categories.length) {
 				this.selectedCategory = this.categories.find(
 					(category) => Number(category.id) === Number(val.category)
@@ -339,7 +343,7 @@ export default {
 			if (val.shareInfo) {
 				const shareInfo = JSON.parse(val.shareInfo)
 				const selectedGroups = shareInfo.map((el) => {
-					return this.user.gdata.find((group) => group.id === el.gid)
+					return this.allGroups.find((group) => group.id === el.gid)
 				})
 				this.selectedGroups = selectedGroups
 			}
@@ -360,6 +364,8 @@ export default {
 			// console.info(this.localNote)
 			this.shareFolder().then((shareInfo) => {
 				this.localNote.shareInfo = shareInfo
+				this.localNote.readusers = ''
+
 				Mymodules.saveNote(this.localNote)
 					.then((result) => {
 

@@ -8,6 +8,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use DoctrineExtensions\Query\Mysql\FindInSet;
+use OCP\Diagnostics\IQuery;
 
 class NoteMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
@@ -54,7 +55,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filter(int $category, int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,array $tagArray,string $userId): array {
+	public function filter(int $category, int $offset,int $limit,int $pubFlag,int $pinFlag,array $userData,array $tagArray,bool $unread,string $userId ): array {
 	//$config->addCustomStringFunction('FINDINSET','DoctrineExtentions\Query\MySql\FindInSet');	
 		/* @var $qb1 IQueryBuilder */
 		 //$qb1= $this->db->getQueryBuilder();
@@ -62,6 +63,7 @@ class NoteMapper extends QBMapper {
 		// 	->from('group_user');
 		// $this->findEntities($qb1);
 		/* @var $qb IQueryBuilder */
+		
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('welcomapp')
@@ -96,6 +98,7 @@ class NoteMapper extends QBMapper {
 			$orX = $qb->expr()->orX();
 			$orX->add($qb->expr()->eq('user_id',$qb->createNamedParameter($userData['id'])));
 			foreach($groups as $groupId ) {
+
 				$orX->add($qb->expr()->like('share_info',$qb->createNamedParameter('%"gid":"'.$groupId.'"%')));
 			}
 			$qb->andWhere($orX);
@@ -108,6 +111,10 @@ class NoteMapper extends QBMapper {
 			$qb->andWhere($orX );
 			
 		}
+		if($unread){
+		$isread="NOT FIND_IN_SET('".$userId."',readusers)";
+			$qb->andWhere($isread);
+		}
 		//$qb->andWhere('FindInSet("1,2,3",1)');
 
 		return $this->findEntities($qb);
@@ -118,7 +125,7 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData ,array $tagArray,string $userId): int {
+	public function filtercount(int $category,int $pubFlag,int $pinFlag,array $userData ,array $tagArray,bool $unread,string $userId): int {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
@@ -155,6 +162,10 @@ class NoteMapper extends QBMapper {
 			}
 			$qb->andWhere($orX2 );
 			
+		}
+		if($unread){
+		$isread="NOT FIND_IN_SET('".$userId."',readusers)";
+			$qb->andWhere($isread);
 		}
 		//$count =$this-db->excuteQuery($qb);
 		//return $count;

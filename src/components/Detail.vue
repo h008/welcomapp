@@ -13,7 +13,11 @@
 			</div>
 		</div>
 		<div class="detail__content">
-			<TagBadges :tags="tags" :display-tag-ids="note.tags" />
+			<div class="d-flex">
+				<TagBadges :tags="readTags" :display-tag-ids="isRead" />
+				<TagBadges :tags="tags" :display-tag-ids="note.tags" />
+				<GroupBadge :groups="note.shareGroups" />
+			</div>
 			<div v-if="note && note.userInfo" class="infobox">
 				<div>作成:{{ note.created }}</div>
 				<div>更新:{{ note.updated }}</div>
@@ -23,6 +27,10 @@
 				<SanitizedContent :content="note.content" />
 			</div>
 			<FileList v-if="note.fileInfo && note.fileInfo.length" :file-info="note.fileInfo" />
+			<ReadUsers :read-users.sync="readUsers"
+				:user="user"
+				:is-read="isRead"
+				:all-users="allUsers" />
 		</div>
 	</div>
 </template>
@@ -30,12 +38,17 @@
 import SanitizedContent from './SanitizedContent.vue'
 import FileList from './FileList.vue'
 import TagBadges from './TagBadges.vue'
+import GroupBadge from './GroupBadge.vue'
+import ReadUsers from './ReadUsers.vue'
+import Mymodules from '../js/modules'
 export default {
 	name: 'Detail',
 	components: {
 		SanitizedContent,
 		FileList,
 		TagBadges,
+		GroupBadge,
+		ReadUsers,
 	},
 	props: {
 		note: {
@@ -54,6 +67,19 @@ export default {
 			type: Array,
 			default: () => { return [] },
 		},
+		allUsers: {
+			type: Array,
+			default: () => { return [] },
+		},
+	},
+	data() {
+		return {
+			readTags: [
+				{ id: 8888, color: 'gray', tag_name: '既読' },
+				{ id: 9999, color: 'red', tag_name: '未読' },
+
+			],
+		}
 	},
 	computed: {
 		categorySeal() {
@@ -75,6 +101,30 @@ export default {
 		eyecatchUrl() {
 			if (!this.eyecatchUrls || !this.eyecatchUrls.length) { return '' }
 			return this.eyecatchUrls[0]
+		},
+		readUsers: {
+			get() {
+				return this.note.readusers.split(',').filter((el) => el)
+			},
+			set(val) {
+				const tmpCsv = val.join(',')
+
+				const tempNote = Object.assign(this.note, { readusers: tmpCsv })
+				Mymodules.updateRead(tempNote).then(() => {
+					this.$emit('update:note', tempNote)
+
+				})
+			},
+
+		},
+		isRead() {
+			if (this.readUsers && this.readUsers.length) {
+				if (this.readUsers.find((uid) => uid === this.user.id).length) {
+					return '8888'
+				}
+
+			}
+			return '9999'
 		},
 	},
 }

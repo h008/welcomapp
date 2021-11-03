@@ -3,15 +3,17 @@
 		<Header :header-config="headerConfig" />
 		<div class="card">
 			<Detail v-if="mode=='detail'"
-				:note="localCurrentNote"
+				:note.sync="localCurrentNote"
 				:user="user"
 				:categories="categories"
-				:tags="tags" />
+				:tags="tags"
+				:all-users="allUsers" />
 			<div v-else>
 				<h2>カテゴリー:{{ title }}</h2>
 				<PinList
 					:filter.sync="pinFilter"
 					:user="user"
+					:all-groups="allGroups"
 					:categories="categories"
 					:tags="tags"
 					:mode.sync="localMode"
@@ -20,6 +22,7 @@
 				<List
 					:filter.sync="localFilter"
 					:user="user"
+					:all-groups="allGroups"
 					:mode.sync="localMode"
 					:notes.sync="localNotes"
 					:current-note.sync="localCurrentNote"
@@ -30,7 +33,8 @@
 				:dialog.sync="dialog"
 				:categories="categories"
 				:tags="tags"
-				:user="user" />
+				:user="user"
+				:all-groups="allGroups" />
 		</div>
 	</div>
 </template>
@@ -74,7 +78,11 @@ export default {
 			type: Object,
 			default: () => { return {} },
 		},
-		users: {
+		allUsers: {
+			type: Array,
+			default: () => { return [] },
+		},
+		allGroups: {
 			type: Array,
 			default: () => { return [] },
 		},
@@ -84,11 +92,17 @@ export default {
 		},
 		filter: {
 			type: Object,
-			default: () => { return { category: 0 } },
+			default: () => {
+				return { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 1 }
+			},
 		},
 		headerConfig: {
 			type: Object,
 			default: () => { return {} },
+		},
+		selectedCategory: {
+			type: Number,
+			default: -2,
 		},
 
 	},
@@ -130,7 +144,7 @@ export default {
 		},
 		pinFilter() {
 			const tmpFilter = Object.assign({}, this.localFilter)
-			return Object.assign(tmpFilter, { pinFlag: 1 })
+			return Object.assign(tmpFilter, { pinFlag: 1, unread: 0 })
 		},
 		localFilter: {
 			get() {
@@ -147,8 +161,14 @@ export default {
 				categoryName = this.categories.find((item) => Number(item.id) === Number(this.filter.category))?.category_name
 
 			}
-			if (!categoryName) {
+			if (!categoryName && this.selectedCategory === 0) {
 				categoryName = 'すべて'
+			}
+			if (!categoryName && this.selectedCategory === 9999) {
+				categoryName = '未読'
+			}
+			if (!categoryName && this.selectedCategory === -1) {
+				categoryName = '下書き'
 			}
 			return categoryName
 		},

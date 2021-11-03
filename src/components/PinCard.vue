@@ -4,6 +4,11 @@
 			<div class="pincard__eyecatch" :style="{'background-color':categorySeal.color}">
 				<img v-if="eyecatchUrl" :src="eyecatchUrl">
 			</div>
+			<div v-if="!note.isRead" class="pincard__isunread">
+				<div class="pincard__isunread_mark">
+					未読
+				</div>
+			</div>
 			<div class="pincard__content">
 				<div class="pincard__title">
 					{{ note.title }}
@@ -13,6 +18,7 @@
 				</h2>
 				<div class="tags__flex">
 					<TagBadges :tags="tags" :display-tag-ids="note.tags" />
+					<GroupBadge :groups="note.shareGroups" />
 					<div v-if="hasFiles" class="pincard__attachment">
 						<AttachmentIcon title="添付あり" />添付あり
 					</div>
@@ -35,11 +41,13 @@
 </template>
 <script>
 import TagBadges from './TagBadges.vue'
+import GroupBadge from './GroupBadge.vue'
 import AttachmentIcon from 'vue-material-design-icons/Attachment.vue'
 export default {
 	name: 'PinCard',
 	components: {
 		TagBadges,
+		GroupBadge,
 		AttachmentIcon,
 	},
 	props: {
@@ -196,5 +204,19 @@ export default {
 	text-align:end;
 	vertical-align: middle;
 
+}
+
+.pincard__isunread {
+	position:absolute;
+	top:-2px;
+	right:-2px;
+}
+
+.pincard__isunread_mark {
+	background-color:gold;
+	border: lightblue solid 1px;
+	border-radius: 50px;
+	padding-inline:8px;
+	font-weight: 600;
 }
 </style>

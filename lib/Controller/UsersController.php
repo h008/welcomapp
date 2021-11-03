@@ -18,6 +18,7 @@ use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use PHPUnit\Util\Json;
 
 class UsersController extends Controller
 {
@@ -98,14 +99,53 @@ class UsersController extends Controller
 	/**
 	 * @NoAdminRequired
 	 */
+	public function getAllGroups(){
+		$groups = $this->groupManager->search('');
+		$groups = array_map(function($group){
+			$gid= $group->getGID();
+			$display_name=$group->getDisplayName();	
+			$ret['id']=$gid;
+			$ret['name']=$display_name;
+			return $ret;
+		},$groups);
+		
+		return new JSONResponse(array_values($groups));
+	}
+	/**
+	 * @NoAdminRequired
+	 */
 	public function getAllUsers()
+	{
+		$group=$this->groupManager->get('all_users');
+		$users=$group->getUsers();
+
+		$users=array_map(function($user){
+			/** @var IUser $user */
+			return $user->getUID();
+		},$users);
+		$users= array_values($users);
+		return new JSONResponse($users);
+
+		
+	}
+	/**
+	 * @NoAdminRequired
+	 */
+	public function getAllUserInfo()
 	{
 		$group=$this->groupManager->get('all_users');
 		$users=$group->getUsers();
 		$users=array_map(function($user){
 			/** @var IUser $user */
-			return $user->getUID();
+			$uid = $user->getUID();
+			/** @var IUser $user */
+			$display_name=$user->getDisplayName();
+			$ret['uid']=$uid;
+			$ret['display_name']=$display_name;
+
+			return $ret;
 		},$users);
+		//$users=json_encode($users)
 		$users= array_values($users);
 		return new JSONResponse($users);
 
