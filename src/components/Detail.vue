@@ -23,7 +23,7 @@
 				<div>更新:{{ note.updated }}</div>
 				<div>投稿:{{ note.userInfo.displayname }}</div>
 			</div>
-			<div class="detail__text">
+			<div v-if="note.content" class="detail__text">
 				<SanitizedContent :content="note.content" />
 			</div>
 			<FileList v-if="note.fileInfo && note.fileInfo.length" :file-info="note.fileInfo" />

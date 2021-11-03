@@ -16,3 +16,9 @@ export default {
 	},
 }
 </script>
+<style>
+#expanddiv li::before {
+	content:none !important;
+}
+
+</style>

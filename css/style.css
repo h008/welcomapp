@@ -1,3 +1,8 @@
 #hello {
 	color: red;
 }
+
+nav li::before {
+	content:none !important;
+	height: 0px;
+}
