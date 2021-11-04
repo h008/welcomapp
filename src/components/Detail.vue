@@ -123,7 +123,7 @@ export default {
 			if (!Array.isArray(this.readUsers)) { return '9999' }
 			if (!this.readUsers.length) { return '9999' }
 			const findedUser = this.readUsers.find((uid) => uid === this.user.id)
-			if (Array.isArray(findedUser) && findedUser.length) {
+			if (findedUser) {
 				return '8888'
 			}
 			return '9999'
