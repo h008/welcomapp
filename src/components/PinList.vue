@@ -51,7 +51,10 @@ export default {
 		},
 		filter: {
 			type: Object,
-			default: () => { return { category: 0, pinFlag: 1, pubFlag: 1 } },
+			default: () => {
+				return { category: 0, pubFlag: 1, pinFlag: 1, offset: 0, limit: 0, tags: 'all', unread: 0 }
+
+				 },
 		},
 	},
 	data() {

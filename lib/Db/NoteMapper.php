@@ -22,13 +22,16 @@ class NoteMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id, string $userId): Note {
+	public function find(int $id, string $userId,bool $updateflg): Note {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('welcomapp')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
+			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		if($updateflg){
+			$qb->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
+		}
+
 		return $this->findEntity($qb);
 	}
 

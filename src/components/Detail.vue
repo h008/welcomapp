@@ -104,6 +104,7 @@ export default {
 		},
 		readUsers: {
 			get() {
+				if (!this.note.readusers) { return [] }
 				return this.note.readusers.split(',').filter((el) => el)
 			},
 			set(val) {
@@ -118,11 +119,12 @@ export default {
 
 		},
 		isRead() {
-			if (this.readUsers && this.readUsers.length) {
-				if (this.readUsers.find((uid) => uid === this.user.id).length) {
-					return '8888'
-				}
-
+			if (!this.readUsers) { return '9999' }
+			if (!Array.isArray(this.readUsers)) { return '9999' }
+			if (!this.readUsers.length) { return '9999' }
+			const findedUser = this.readUsers.find((uid) => uid === this.user.id)
+			if (Array.isArray(findedUser) && findedUser.length) {
+				return '8888'
 			}
 			return '9999'
 		},

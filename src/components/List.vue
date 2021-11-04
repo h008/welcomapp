@@ -26,12 +26,12 @@
 							</div>
 							<div class="d-flex">
 								<TagBadges :tags="tags" :display-tag-ids="item.tags" />
+								<GroupBadge :groups="item.shareGroups" />
 								<div v-if="hasFiles(item)" class="list__attachment">
 									<AttachmentIcon title="添付あり" />添付あり
 								</div>
-								<GroupBadge :groups="item.shareGroups" />
 								<div>
-									既読:{{ item.readusers.split(',').length }}
+									既読:{{ readUsersCount(item.readusers) }}
 								</div>
 							</div>
 						</div>
@@ -113,7 +113,7 @@ export default {
 		filter: {
 			type: Object,
 			default: () => {
-				return { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 1 }
+				return { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 0 }
 
 			},
 
@@ -182,6 +182,17 @@ export default {
 
 	},
 	methods: {
+		readUsersCount(usersCsv) {
+			if (!usersCsv) { return 0 }
+			const tmpArray = usersCsv.split(',')
+
+			if (!tmpArray || !Array.isArray(tmpArray) || !tmpArray.length) {
+				return 0
+			}
+			const filteredArray = tmpArray.filter((user) => (user))
+			return filteredArray.length
+
+		},
 		hasFiles(note) {
 			if (!note.fileInfo || !note.fileInfo.length) {
 				return false

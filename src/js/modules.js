@@ -30,7 +30,7 @@ export default {
 			uuid: note.uuid,
 			shareInfo: note.shareInfo,
 			readusers: note.readusers,
-			updateflg: true,
+			updateflg: 1,
 
 		}
 		if (!note.id) { noteObj.id = -1 }
@@ -63,7 +63,7 @@ export default {
 			uuid: note.uuid,
 			shareInfo: note.shareInfo,
 			readusers: note.readusers,
-			updateflg: false,
+			updateflg: 0,
 
 		}
 		return updateNote(noteObj)

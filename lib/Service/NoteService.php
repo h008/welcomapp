@@ -33,10 +33,10 @@ class NoteService
             throw $e;
         }
     }
-    public function find(int $id, string $userId)
+    public function find(int $id, string $userId,bool $updateflg)
     {
         try {
-            return $this->mapper->find($id, $userId);
+            return $this->mapper->find($id, $userId, $updateflg);
         } catch (Exception $e) {
             $this->handleException($e);
         }
@@ -146,7 +146,7 @@ class NoteService
             $pubFlag = 0;
         }
         try {
-            $note = $this->mapper->find($id, $userId);
+            $note = $this->mapper->find($id, $userId,$updateflg);
             if ($updateflg) {
                 $now = new DateTime();
                 $now->setTimeZone(new DateTimeZone('Asia/Tokyo'));
@@ -156,7 +156,7 @@ class NoteService
             #$date=date("Y-m-d H:i:s");
             $note->setTitle($title);
             $note->setContent($content);
-            $note->setUserId($userId);
+            //$note->setUserId($userId);
             $note->setCategory($category);
             $note->setPinFlag($pinFlag);
             $note->setPubFlag($pubFlag);
@@ -172,7 +172,7 @@ class NoteService
     public function delete(int $id, string $userId)
     {
         try {
-            $note = $this->mapper->find($id, $userId);
+            $note = $this->mapper->find($id, $userId,true);
             $this->mapper->delete($note);
             return $note;
         } catch (Exception $e) {

@@ -133,7 +133,7 @@ export default {
 			user: {},
 			containerMode: 'list',
 			testData: null,
-			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 1 },
+			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 0 },
 			headerConfig: {},
 			allUsers: [],
 			allGroups: [],
@@ -356,7 +356,6 @@ export default {
 }
 </script>
 <style scoped>
-
 
 #app-content > div {
 	width: 100%;
