@@ -564,7 +564,7 @@ const parseCommentXml = (xml) => {
 		const actorId = prop.getElementsByTagName('oc:actorId')[0]?.textContent
 		const gmtDateTime = prop.getElementsByTagName('oc:creationDateTime')[0]?.textContent
 
-		const creationDateTime = gmtDateTime ? dayjs.tz(gmtDateTime, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss') : ''
+		const creationDateTime = gmtDateTime ? dayjs(gmtDateTime).format('YYYY-MM-DD HH:mm:ss') : ''
 		const actorDisplayName = prop.getElementsByTagName('oc:actorDisplayName')[0]?.textContent
 		if (message) {
 			result.push({ id, message, actorId, creationDateTime, actorDisplayName })
