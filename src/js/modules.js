@@ -92,7 +92,6 @@ export default {
 			 axios.delete(generateUrl(`/apps/welcomapp/notes/${note.id}`))
 			 }
 		}).catch((e) => {
-			console.error(e)
 			showError(t('welcomapp', 'Could not delete'))
 		})
 	},
@@ -121,7 +120,6 @@ export default {
 			await axios.delete(generateUrl(`/apps/welcomapp/categories/${category.id}`))
 			return category
 		} catch (e) {
-			console.error(e)
 			showError(t('welcomapp', 'Could not delete'))
 		}
 	},
@@ -150,7 +148,6 @@ export default {
 			await axios.delete(generateUrl(`/apps/welcomapp/tags/${tag.id}`))
 			return tag
 		} catch (e) {
-			console.error(e)
 			showError(t('welcomapp', 'Could not delete'))
 		}
 	},
@@ -192,6 +189,17 @@ export default {
 				return fetchDirList(path)
 			}
 		})
+
+	},
+	fetchSharedComments(shareId) {
+		return fetchComments(shareId)
+
+	},
+	putSharedComments(userId, shareId, comment) {
+		return putComments(userId, shareId, comment)
+	},
+	removeSharedComments(shareId, commentId) {
+		return removeComments(shareId, commentId)
 
 	},
 	removeFile(file) {
@@ -281,15 +289,10 @@ export default {
 
 	},
 		 fetchFileInfo(uuid, userId, userDir) {
-			 // console.info('fetchFileInfo')
-		// console.info('userDir')
-		// console.info(userDir)
 
 			 if (!uuid) { return Promise.resolve([]) }
 		return axios.get(generateUrl(`/apps/welcomapp/getfiles/${uuid}`)).then((result) => {
-			// console.info(result)
 			if (!result || !result.data || !result.data.length) {
-				// console.info('nolength')
 				 return []
 			}
 			return result.data.map((elem) => {
@@ -350,7 +353,6 @@ export default {
 		return axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter }).then((result) => {
 			return result.data
 		}).catch((e) => {
-			console.error(e)
 			showError(t('welcomapp', 'Could not fetch notes'))
 			return Promise.resolve(0)
 		}).then((total) => {
@@ -427,6 +429,7 @@ export default {
 								const dirInfo = this.fetchDirInfo(path)
 								const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
 								return Promise.all([fileInfo, dirInfo]).then((array) => {
+									note.baseFileId = array[1][0].fileId
 									const checked = this.compareFileInfo(array)
 									note.fileInfo = checked.fileInfo
 									note.dirInfo = checked.dirInfo
@@ -448,7 +451,6 @@ export default {
 
 				})
 			}).catch((e) => {
-				console.error(e)
 				showError(t('welcomapp', 'Could not fetch notes'))
 				return Promise.resolve([])
 			})
@@ -489,9 +491,6 @@ export default {
 // const value = JSON.stringify(params[key])
 // options += `${key}=${value}&`
 // } else {
-// //console.info(key)
-// //console.info(typeof params[key])
-// //console.info(params[key])
 // }
 // }
 // return options ? options.slice(0, -1) : options
@@ -538,6 +537,47 @@ const removeAttachedFiles = (note) => {
 
 	})
 
+}
+
+/**
+ * Update an existing note on the server
+ *
+ * @param {string} xml string
+ */
+const parseCommentXml = (xml) => {
+	if (!xml) {
+		return []
+	}
+	const parser = new DOMParser()
+	const dom = parser.parseFromString(xml, 'text/xml')
+	const response = dom.getElementsByTagName('d:multistatus')[0]?.getElementsByTagName('d:response')
+	if (!response || !response.length) {
+		 return []
+	}
+	const result = []
+
+	response.forEach((element) => {
+		const prop = element.getElementsByTagName('d:propstat')[0]?.getElementsByTagName('d:prop')[0]
+		const id = prop.getElementsByTagName('oc:id')[0]?.textContent
+		const message = prop.getElementsByTagName('oc:message')[0]?.textContent
+		// const verb = prop.getElementsByTagName('oc:verb')[0]?.textContent
+		const actorId = prop.getElementsByTagName('oc:actorId')[0]?.textContent
+		const gmtDateTime = prop.getElementsByTagName('oc:creationDateTime')[0]?.textContent
+
+		const creationDateTime = gmtDateTime ? dayjs.tz(gmtDateTime, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss') : ''
+		const actorDisplayName = prop.getElementsByTagName('oc:actorDisplayName')[0]?.textContent
+		if (message) {
+			result.push({ id, message, actorId, creationDateTime, actorDisplayName })
+		}
+
+	})
+	result.sort((a, b) => {
+		if (Number(a.id) < Number(b.id)) { return -1 }
+		if (Number(a.id) > Number(b.id)) { return 1 }
+		return 0
+
+	})
+	return result
 }
 /**
  * Update an existing note on the server
@@ -629,8 +669,6 @@ const checkDirExist = async (path) => {
 		response = response.replace(/^\/remote.php\/dav\/files\//, '').replace(/\/$/, '')
 		return (response === path)
 	}).catch((e) => {
-		// console.info('searchEror')
-		// console.info(e)
 		return false
 	})
 
@@ -665,6 +703,73 @@ const fetchDirList = async (path) => {
 	})
 
 }
+
+/**
+ * Update an existing note on the server
+ *
+ * @param {string} shareId string
+ */
+const fetchComments = async (shareId) => {
+	if (!shareId) {
+		return
+	}
+	const data = `<?xml version="1.0" encoding="utf-8" ?>
+<D:propfind xmlns:D="DAV:" xmlns:oc="http://owncloud.org/ns" >
+	<D:prop >
+		<oc:id />
+		<oc:message />
+		<oc:verb />
+		<oc:actorId />
+		<oc:creationDateTime />
+		<oc:actorDisplayName />
+		<oc:isUnread />
+	</D:prop>
+</D:propfind>`
+	return axios.request({ url: `/remote.php/dav/comments/files/${shareId}`, data, method: 'PROPFIND' }).then((result) => {
+		if (!result || !result.data) {
+			return
+		}
+		return parseCommentXml(result.data)
+	}).catch((e) => {
+		if (e.response) {
+			return e.response
+		} else {
+			return e
+		}
+	})
+}
+/**
+ * Update an existing note on the server
+ *
+ * @param {string} userId string
+ * @param {string} fileId string
+ * @param {string} message string
+ */
+const putComments = async (userId, fileId, message) => {
+	if (!fileId) {
+		return
+	}
+	return await axios.post(`/remote.php/dav/comments/files/${fileId}`, {
+		actorDisplayName: 'test',
+		actorId: userId,
+		actorType: 'users',
+		creationDateTime: (new Date()).toUTCString(),
+		message,
+		objectType: 'files',
+		verb: 'comment',
+	})
+}
+/**
+ *
+ * @param {string} fileId string
+ * @param {string} commentId string
+ */
+const removeComments = async (fileId, commentId) => {
+	if (!fileId || !commentId) {
+		return
+	}
+	return await axios.request({ url: `/remote.php/dav/comments/files/${fileId}/${commentId}`, method: 'DELETE' }).then(() => { return true }).catch(() => { return false })
+}
 /**
  * Update an existing note on the server
  *
@@ -696,7 +801,6 @@ const createDir = async (path) => {
 		)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not create the note'))
 	}
 }
@@ -711,7 +815,6 @@ const createDir = async (path) => {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/notes/${note.id}`), note)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not update the note'))
 	}
 
@@ -730,7 +833,6 @@ const createDir = async (path) => {
 		)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not create the category'))
 	}
 }
@@ -745,7 +847,6 @@ const createDir = async (path) => {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/categories/${category.id}`), category)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not update the category'))
 	}
 }
@@ -763,7 +864,6 @@ const createDir = async (path) => {
 		)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not create the tag'))
 	}
 }
@@ -778,7 +878,6 @@ const createDir = async (path) => {
 		const response = await axios.put(generateUrl(`/apps/welcomapp/tags/${tag.id}`), tag)
 		return response
 	} catch (e) {
-		console.error(e)
 		showError(t('welcomapp', 'Could not update the tag'))
 	}
 	 }

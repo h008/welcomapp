@@ -7,7 +7,9 @@
 				:user="user"
 				:categories="categories"
 				:tags="tags"
-				:all-users="allUsers" />
+				:all-users="allUsers"
+				:share-id="shareId"
+				:is-admin="isAdmin" />
 			<div v-else>
 				<h2>カテゴリー:{{ title }}</h2>
 				<PinList
@@ -104,6 +106,10 @@ export default {
 			type: Number,
 			default: -2,
 		},
+		isAdmin: {
+			type: Boolean,
+			default: false,
+		},
 
 	},
 
@@ -111,6 +117,7 @@ export default {
 		return {
 			dialog: false,
 			userDir: '',
+			shareId: '',
 
 		}
 	},
@@ -339,9 +346,9 @@ export default {
 					// console.info(shareInfo)
 				}
 				if (!user.groups?.length) { return '' }
-				const shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]
+				this.shareId = shareInfo.filter((info) => user.groups.includes(info.gid)).map((elm) => elm.shareId)[0]
 
-			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
+			 return axios.get(`/ocs/v2.php/apps/files_sharing/api/v1/shares/${this.shareId}`, { headers: { 'OCS-APIRequest': true } }).then((result) => {
 
 			 return result?.data?.ocs?.data[0]?.file_target
 			 })

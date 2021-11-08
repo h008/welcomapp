@@ -71,7 +71,8 @@
 					:mode.sync="containerMode"
 					:header-config="headerConfig"
 					:filter.sync="filter"
-					:selected-category="selectedCategory" />
+					:selected-category="selectedCategory"
+					:is-admin="isAdmin" />
 			</div>
 			<div v-if="mode=='categorySetting' && isAdmin">
 				<CategorySetting :categories.sync="categories" />

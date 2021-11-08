@@ -78,8 +78,6 @@ export default {
 
 		},
 		canShowItem(note) {
-			console.info('listdebug')
-			console.info(note)
 			if (note.filename === `.announce_${note.fileurl}`) {
 				return false
 			}

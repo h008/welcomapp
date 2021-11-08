@@ -31,6 +31,13 @@
 				:user="user"
 				:is-read="isRead"
 				:all-users="allUsers" />
+			<div class="container">
+				<Comments :share-id="shareId"
+					:file-id="note.baseFileId"
+					:user="user"
+					:author-id="note.userId"
+					:is-admin="isAdmin" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -40,6 +47,7 @@ import FileList from './FileList.vue'
 import TagBadges from './TagBadges.vue'
 import GroupBadge from './GroupBadge.vue'
 import ReadUsers from './ReadUsers.vue'
+import Comments from './Comments.vue'
 import Mymodules from '../js/modules'
 export default {
 	name: 'Detail',
@@ -49,6 +57,7 @@ export default {
 		TagBadges,
 		GroupBadge,
 		ReadUsers,
+		Comments,
 	},
 	props: {
 		note: {
@@ -70,6 +79,14 @@ export default {
 		allUsers: {
 			type: Array,
 			default: () => { return [] },
+		},
+		shareId: {
+			type: String,
+			default: '',
+		},
+		isAdmin: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {
@@ -180,5 +197,10 @@ export default {
 
 .infobox{
 	text-align: end;
+}
+
+.container {
+	margin:0 auto;
+
 }
 </style>
