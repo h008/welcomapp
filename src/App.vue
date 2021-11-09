@@ -1,62 +1,64 @@
 <template>
 	<div id="content" class="app-welcomapp">
 		<AppNavigation>
-			<TagSelector :tags="tags" :filter.sync="filter" />
-			<AppNavigationItem
-				v-if="!loading"
-				title="新着順"
-				:icon="menuIcon(0)"
-				@click="changeCategory(0)" />
-			<AppNavigationItem
-				v-if="!loading"
-				title="未読"
-				:icon="menuIcon(9999)"
-				@click="selectUnread" />
-			<span v-if="!loading && categories">
+			<div class="nav__wrapper">
+				<TagSelector :tags="tags" :filter.sync="filter" />
 				<AppNavigationItem
-					v-for="category of categories"
-					:key="`ct_${category.id}`"
-					:title="category.category_name"
-					:icon="menuIcon(category.id)"
-					@click="changeCategory(category.id)" />
-			</span>
-			<AppNavigationItem
-				v-if="!loading && canAnnounce"
-				title="下書き"
-				:icon="menuIcon(-1)"
-				@click="showDraft()" />
+					v-if="!loading"
+					title="新着順"
+					:icon="menuIcon(0)"
+					@click="changeCategory(0)" />
+				<AppNavigationItem
+					v-if="!loading"
+					title="未読"
+					:icon="menuIcon(9999)"
+					@click="selectUnread" />
+				<span v-if="!loading && categories">
+					<AppNavigationItem
+						v-for="category of categories"
+						:key="`ct_${category.id}`"
+						:title="category.category_name"
+						:icon="menuIcon(category.id)"
+						@click="changeCategory(category.id)" />
+				</span>
+				<AppNavigationItem
+					v-if="!loading && canAnnounce"
+					title="下書き"
+					:icon="menuIcon(-1)"
+					@click="showDraft()" />
 
-			<AppNavigationNew
-				v-if="!loading && canAnnounce"
-				:text="t('welcomapp', '新規アナウンス')"
-				:disabled="false"
-				button-id="new-welcomapp-button"
-				button-class="icon-add"
-				@click="newNote" />
-			<AppNavigationItem
-				v-if="!loading && isAdmin"
-				title="カテゴリーの設定"
-				:text="t('welcomapp', 'カテゴリーの設定')"
-				:disabled="false"
-				button-id="categories-welcomapp-button"
-				button-class="icon-add"
-				@click="changeMode('categorySetting')" />
-			<AppNavigationItem
-				v-if="!loading && isAdmin"
-				title="タグの設定"
-				:text="t('welcomapp', 'タグの設定')"
-				:disabled="false"
-				button-id="tags-welcomapp-button"
-				button-class="icon-add"
-				@click="changeMode('tagSetting')" />
-			<AppNavigationItem
-				v-if="!loading && isAdmin"
-				title="ヘッダの設定"
-				:text="t('welcomapp', 'ヘッダの設定')"
-				:disabled="false"
-				button-id="header-welcomapp-button"
-				button-class="icon-add"
-				@click="changeMode('headerSetting')" />
+				<AppNavigationNew
+					v-if="!loading && canAnnounce"
+					:text="t('welcomapp', '新規アナウンス')"
+					:disabled="false"
+					button-id="new-welcomapp-button"
+					button-class="icon-add"
+					@click="newNote" />
+				<AppNavigationItem
+					v-if="!loading && isAdmin"
+					title="カテゴリーの設定"
+					:text="t('welcomapp', 'カテゴリーの設定')"
+					:disabled="false"
+					button-id="categories-welcomapp-button"
+					button-class="icon-add"
+					@click="changeMode('categorySetting')" />
+				<AppNavigationItem
+					v-if="!loading && isAdmin"
+					title="タグの設定"
+					:text="t('welcomapp', 'タグの設定')"
+					:disabled="false"
+					button-id="tags-welcomapp-button"
+					button-class="icon-add"
+					@click="changeMode('tagSetting')" />
+				<AppNavigationItem
+					v-if="!loading && isAdmin"
+					title="ヘッダの設定"
+					:text="t('welcomapp', 'ヘッダの設定')"
+					:disabled="false"
+					button-id="header-welcomapp-button"
+					button-class="icon-add"
+					@click="changeMode('headerSetting')" />
+			</div>
 		</AppNavigation>
 		<AppContent v-if="user && user.id">
 			<div v-if="mode=='notes'">
@@ -375,4 +377,11 @@ textarea {
 	flex-grow: 1;
 	width: 100%;
 }
+
+.nav__wrapper {
+	max-height: 100vh;
+	min-height:100%;
+	overflow-y:scroll;
+}
+
 </style>
