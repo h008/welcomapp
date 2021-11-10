@@ -6,6 +6,7 @@ use OCP\Files\NotFoundException;
 use OCP\AppFramework\OCS\OCSException;
 use OCP\AppFramework\OCS\OCSNotFoundException;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\Response;
 
 use OCA\WelcomApp\AppInfo\Application;
 use OCP\Accounts\IAccountManager;
@@ -34,6 +35,8 @@ class UsersController extends Controller
 
 	/** @var string */
 	private $userId;
+	private $name;
+
 	
 
 	use Errors;
@@ -95,6 +98,24 @@ class UsersController extends Controller
 		$group->addUser($user);
 		
 		
+	}
+	/**
+	 * @NoAdminRequired
+	 * 
+	 * @param string $id
+	 * @param string $gname
+	 * 
+	 */
+	public function editGroup($request,$id,$gname){
+		if($id && $gname){
+			$group =$this->groupManager->get($id);
+			$group->setDisplayName($gname);
+
+		}
+		$ret['req']=$request;
+		$ret['id']=$id;
+		$ret['name']=$gname;
+return new JSONResponse($ret);
 	}
 	/**
 	 * @NoAdminRequired

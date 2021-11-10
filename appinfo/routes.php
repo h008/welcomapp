@@ -18,6 +18,7 @@ return [
 		['name' => 'users#getAllUserInfo','url'=>'/getallusers','verb' =>'GET'],
 		['name' => 'users#getUserInfo','url'=>'/getuser/{id}','verb' =>'GET'],
 		['name' => 'users#getAllGroups','url'=>'/getallgroups','verb' =>'GET'],
+		['name' => 'users#editGroup','url'=>'/editgroup/{id}','verb' =>'PUT'],
 		['name' => 'files#showByAid','url'=>'/getfiles/{fileurl}','verb'=>'GET'],
 		['name' => 'config#showByKind','url'=>'/getconfig/{kind}','varb'=>'GET'],
 	]

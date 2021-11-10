@@ -58,6 +58,14 @@
 					button-id="header-welcomapp-button"
 					button-class="icon-add"
 					@click="changeMode('headerSetting')" />
+				<AppNavigationItem
+					v-if="!loading && isAdmin"
+					title="グループ名の設定"
+					:text="t('welcomapp', 'グループ名の設定')"
+					:disabled="false"
+					button-id="groups-welcomapp-button"
+					button-class="icon-add"
+					@click="changeMode('groupSetting')" />
 			</div>
 		</AppNavigation>
 		<AppContent v-if="user && user.id">
@@ -85,6 +93,9 @@
 			<div v-if="mode=='headerSetting' && isAdmin">
 				<HeaderEdit :user="user" :header-config.sync="headerConfig" />
 			</div>
+			<div v-if="mode=='groupSetting' && isAdmin">
+				<GroupEdit :user="user" :all-groups="allGroups" />
+			</div>
 		</AppContent>
 	</div>
 </template>
@@ -106,6 +117,7 @@ import CategorySetting from './components/CategorySetting.vue'
 import TagSetting from './components/TagSetting.vue'
 import HeaderEdit from './components/HeaderEdit.vue'
 import TagSelector from './components/TagSelector.vue'
+import GroupEdit from './components/GroupEdit.vue'
 import Mymodules from './js/modules'
 
 export default {
@@ -119,6 +131,7 @@ export default {
 		CategorySetting,
 		TagSetting,
 		HeaderEdit,
+		GroupEdit,
 		TagSelector,
 	},
 	data() {
@@ -171,7 +184,7 @@ export default {
 		axios.get(generateUrl('/apps/welcomapp/getallgroups')).then((result) => {
 			if (result && result.data) {
 
-				this.allGroups = result.data.filter((group) => group.gid !== 'admin')
+				this.allGroups = result.data.filter((group) => group.id !== 'admin')
 			}
 		})
 		this.loading = false
