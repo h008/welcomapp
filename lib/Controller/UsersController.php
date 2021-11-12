@@ -20,6 +20,8 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use PHPUnit\Util\Json;
+use OCP\Mail\IEMailTemplate;
+use OCP\Mail\IMailer;
 
 class UsersController extends Controller
 {
@@ -32,6 +34,8 @@ class UsersController extends Controller
 	protected $userSession;
 	/** @var IAccountManager */
 	protected $accountManager;
+	/** @var IMailer */
+	private $mailer;
 
 	/** @var string */
 	private $userId;
@@ -47,6 +51,7 @@ class UsersController extends Controller
 		IUserManager $userManager,
 		IUserSession $userSession,
 		IAccountManager $accountManager,
+		IMailer $mailer,
 		$userId
 	) {
 		parent::__construct(Application::APP_ID, $request);
@@ -55,6 +60,7 @@ class UsersController extends Controller
 		$this->userManager=$userManager;
 		$this->userSession=$userSession;
 		$this->accountManager=$accountManager;
+		$this->mailer = $mailer;
 	}
 
 	/**
@@ -226,6 +232,37 @@ return new JSONResponse($ret);
 		$data['gdata']=$gdata;
 		return $data;
 		
+	}
+	public function sendMessage(){
+		$user=$this->userManager->get($this->userId);
+		$this->sendMail($user);
+
+	}
+	/**
+	 * Sends a welcome mail to $user
+	 *
+	 * @param IUser $user
+	 * @param IEmailTemplate $emailTemplate
+	 * @throws \Exception If mail could not be sent
+	 */
+	private function sendMail(IUser $user,
+							 ): void {
+
+		// Be sure to never try to send to an empty e-mail
+		$email = $user->getEMailAddress();
+		if ($email === null) {
+			return;
+		}
+		$emailTemplate= $this->mailer->createEMailTemplate('welcomapp',[]);
+		$emailTemplate->setSubject('タイトル');
+		$emailTemplate->addBodyText('ボディテキスト');
+
+
+		$message = $this->mailer->createMessage();
+		$message->setTo([$email => $user->getDisplayName()]);
+		$message->setFrom(['support@sincerely.c3g.jp' => 'お知らせ']);
+		$message->useTemplate($emailTemplate);
+		$this->mailer->send($message);
 	}
 
 

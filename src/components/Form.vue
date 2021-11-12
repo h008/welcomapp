@@ -132,7 +132,7 @@
 							<input
 								type="button"
 								class="primary fixed__row__end"
-								:value="t('welcomapp', '保存')"
+								:value="savetxt"
 								:disabled="!canSave"
 								@click="saveNote">
 						</div>
@@ -217,9 +217,19 @@ export default {
 			contentWidth: 'w800',
 			iconScreenWidth: 'icon-fullscreen',
 			// editorContent: 'test',
+			loading: false,
+
 		}
 	},
 	computed: {
+		savetxt() {
+			if (this.loading) {
+				return '保存中です'
+			} else {
+				return '保存'
+			}
+
+		},
 		modalclass() {
 			if (this.dialog) {
 				return 'modal__wrapper modal__wrapper_visible'
@@ -239,7 +249,7 @@ export default {
 			},
 		},
 		canSave() {
-			return (this.localNote.title && this.selectedCategory.id && this.localNote.content)
+			return (this.localNote.title && this.selectedCategory.id && this.localNote.content && !this.loading)
 		},
 		pubFlag: {
 			get() { return Number(this.localNote.pubFlag) === 1 },
@@ -361,6 +371,7 @@ export default {
 		},
 
 		saveNote() {
+			this.loading = true
 			// console.info(this.localNote)
 			this.shareFolder().then((shareInfo) => {
 				this.localNote.shareInfo = shareInfo
@@ -372,8 +383,9 @@ export default {
 						if (result.data && result.data.id) {
 							this.localNote.id = result.data.id
 							this.localNote = result.data
-							this.saveFilesInfo()
-							this.shareFolder()
+							const fn1 = this.saveFilesInfo()
+							const fn2 = this.shareFolder()
+							Promise.all([fn1, fn2]).then(() => { this.loading = false }).catch(() => { this.loading = false })
 							this.$emit('update:note', this.localNote)
 							this.$emit('update:dialog', false)
 						}
@@ -384,10 +396,12 @@ export default {
 			})
 		},
 		saveFilesInfo() {
+			const result = []
 			if (this.dirInfo.length) {
 				this.dirInfo.forEach((item) => {
 					if (item.filename === `.announce_${this.localNote.uuid}`) {
 						console.info('parentFolder')
+						result.push(Promise.resolve())
 
 					} else {
 						console.info(item.filename)
@@ -411,19 +425,15 @@ export default {
 						}
 					 console.info(data)
 
-						axios.post(generateUrl('/apps/welcomapp/files'), data).then((result) => {
-						 console.info('saveFile')
-						 console.info(result)
-						}).catch((e) => {
-						 console.info('saveFileError')
-							console.error(e)
-						})
+						result.push(axios.post(generateUrl('/apps/welcomapp/files'), data))
 					}
 
-				}
-				)
+				})
 
+			} else {
+				result.push(Promise.resolve())
 			}
+			return result
 		},
 		getShareInfo(path) {
 			 return axios.get('/ocs/v2.php/apps/files_sharing/api/v1/shares', { params: { path, reshares: true, subfiles: false } }).then((result) => {
@@ -434,7 +444,7 @@ export default {
 		},
 		shareFolder() {
 			if (!this.user.id || !this.localNote.uuid) {
-				return
+				return Promise.resolve()
 			}
 			const path = `/.announce_${this.localNote.uuid}`
 			const sharedGids = Mymodules.fetchDirInfoOrCreate(`${this.user.id}${path}`).then(() => {
@@ -550,6 +560,9 @@ export default {
 				}
 			}
 
+		},
+		sendMessage() {
+			axios.post(generateUrl('/apps/welcomapp/sendmail')).then((res) => console.info(res)).catch((e) => { console.error(e) })
 		},
 
 	},
