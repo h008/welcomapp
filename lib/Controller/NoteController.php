@@ -147,7 +147,7 @@ class NoteController extends Controller
 		$result= $this->handleNotFound(function () use ($id, $title, $content, $category, $pinFlag, $pubFlag, $tags, $uuid, $shareInfo, $readusers,$updateflg) {
 			return $this->service->update($id, $title, $content, $this->userId, $category, $pinFlag, $pubFlag, $tags, $uuid, $shareInfo, $readusers,$updateflg);
 		});
-		if($result && $pubFlag){
+		if($result && $pubFlag && $updateflg){
 			$user=$this->userManager->get($this->userId);
 
 			$this->sendMail($user,$shareInfo,$title,$content,true);
@@ -227,7 +227,12 @@ class NoteController extends Controller
 		$bodytext.=$content;
 		$emailTemplate->setSubject("【アナウンス】".$subject);
 		$emailTemplate->addBodyText("https://www.sincerely.c3g.jpからのお知らせです。");
-		$emailTemplate->addBodyText($subject ."https://www.sincerely.c3g.jp　にログインして詳細をご確認ください。");
+		$emailTemplate->addBodyText($subject );
+		if($update){
+			$emailTemplate->addBodyText("未読状態に戻っています。");
+			
+		}
+		$emailTemplate->addBodyText("https://www.sincerely.c3g.jp　にログインして詳細をご確認ください。");
 
 
 		$message = $this->mailer->createMessage();
