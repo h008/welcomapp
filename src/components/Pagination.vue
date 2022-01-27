@@ -53,7 +53,6 @@ export default {
 	},
 	methods: {
 		updateCurrent(n) {
-			console.info(n)
 			this.$emit('update:current', n)
 		},
 	},
