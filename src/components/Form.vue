@@ -400,11 +400,9 @@ export default {
 			if (this.dirInfo.length) {
 				this.dirInfo.forEach((item) => {
 					if (item.filename === `.announce_${this.localNote.uuid}`) {
-						console.info('parentFolder')
 						result.push(Promise.resolve())
 
 					} else {
-						console.info(item.filename)
 
 						const updated = dayjs.tz(item.modified, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')
 						if (!item.isEyecatch || item.isEyecatch === 'false' || Number(item.isEyecatch) === 0) { item.isEyecatch = 0 } else { item.isEyecatch = 1 }
@@ -423,7 +421,6 @@ export default {
 							shareId: this.user.shareId,
 
 						}
-					 console.info(data)
 
 						result.push(axios.post(generateUrl('/apps/welcomapp/files'), data))
 					}

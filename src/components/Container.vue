@@ -158,8 +158,8 @@ export default {
 				return this.filter
 			},
 			set(val) {
-				console.info(val)
-				this.$emit('update:filter', val)
+				const tmpFilter = Object.assign({}, val)
+				this.$emit('update:filter', tmpFilter)
 			},
 
 		},

@@ -45,7 +45,6 @@ export default {
 	methods: {
 		saveGroup(group) {
 
-			console.info(group)
 			const data = { gname: group.name }
 
 			axios.put(generateUrl(`apps/welcomapp/editgroup/${group.id}`), data, { headers: { 'content-type': 'application/json' } }).then((result) => { console.info(result) }).catch((e) => { console.error(e) })
