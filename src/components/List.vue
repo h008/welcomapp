@@ -173,6 +173,7 @@ export default {
 			}
 		},
 		currentIndex(val) {
+      console.info(val)
 			const offset = (val - 1) * this.localFilter.limit
 			this.$set(this.localFilter, 'offset', offset)
 		},
