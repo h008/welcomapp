@@ -167,6 +167,9 @@ export default {
 
 	},
 	watch: {
+		filter(val) {
+			console.info(val)
+		},
 
 	},
 	/**
