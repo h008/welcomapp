@@ -152,6 +152,7 @@ export default {
 				return this.filter
 			},
 			set(val) {
+				console.info('update localFilter')
 				console.info(val)
 				this.$emit('update:filter', val)
 			},
@@ -176,6 +177,9 @@ export default {
 			console.info(val)
 			const offset = (val - 1) * this.localFilter.limit
 			this.$set(this.localFilter, 'offset', offset)
+			console.info(this.localFilter)
+			const tmpFilter = Object.assign(this.localFilter, { offset })
+			this.localFilter = tmpFilter
 		},
 
 	},
