@@ -158,6 +158,7 @@ export default {
 				return this.filter
 			},
 			set(val) {
+				console.info(val)
 				this.$emit('update:filter', val)
 			},
 
