@@ -416,13 +416,14 @@ export default {
 							if (shareInfos) {
 								note.shareGroups = shareInfos.map((share) => allGroups.find((group) => group.id === share.gid))
 							}
-							if (note.content) {
+							if (note.content && note.userId !== userId) {
 							// TODO
-								const targetStr = note.content
-								const beforeStr = `/${note.userId}/.announce_${note.uuid}`
-								const afterStr = `/${userId}${userDir}`
-								const reg = new RegExp(beforeStr, 'g')
-								note.content = targetStr.replace(reg, afterStr)
+
+								 const targetStr = note.content
+								 const beforeStr = `/${note.userId}/.announce_${note.uuid}`
+								 const afterStr = `/${userId}${userDir}`
+								 const reg = new RegExp(beforeStr, 'g')
+								 note.content = targetStr.replace(reg, afterStr)
 							}
 							if (userId && userDir && note.uuid) {
 								const path = `${userId}${userDir}`
