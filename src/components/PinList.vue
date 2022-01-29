@@ -97,6 +97,8 @@ export default {
 				 localList.forEach(async (note, index) => {
 					 this.localList[index] = await this.addShareInfoOfNote(note)
 
+					 this.localList = this.localList.slice()
+
 				 })
 			 }
 			)
