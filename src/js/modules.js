@@ -346,7 +346,7 @@ export default {
 	},
 	// TODO
 	async fetchNotes(user, propFilter) {
-		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0, tags: 'all', unread: 0 }
+		const defFilter = { category: 0, offset: 0, limit: 10, pubFlag: 1, pinFlag: 0, tags: 'all', unread: 0 }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
 		 // const userGroups = user.groups
