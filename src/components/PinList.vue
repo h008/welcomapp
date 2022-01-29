@@ -94,9 +94,19 @@ export default {
 				this.localList = localList
 				this.itemNumber = data.total
 				this.loading = false
+				 localList.forEach(async (note, index) => {
+					 this.localList[index] = await this.addShareInfoOfNote(note)
+
+				 })
 			 }
 			)
 
+		},
+		async addShareInfoOfNote(note) {
+			if (!note.userId || !note.shareInfo) {
+				return Promise.resolve(note)
+			}
+			return await Modules.addShareInfoNote(this.user.id, note, this.user.groups)
 		},
 		canAnnounce(item) {
 			if (!this.user || !this.user.groups) { return false }

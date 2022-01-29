@@ -206,12 +206,18 @@ export default {
 			if (!this.user || !this.user.groups) { return false }
 			return this.user.groups.includes('announce') && item.userId === this.user.id
 		},
-		fetchNotes() {
+		 fetchNotes() {
 			this.loading = true
 			Modules.fetchNotes(this.user, this.filter).then((result) => {
+				console.info(result)
 				if (result && result.data && result.data.length) {
 					this.localListItem = result.data
 					this.totalNotesNumber = result.total
+					result.data.forEach(async (note, index) => {
+						this.localListItem[index] = await this.addShareInfoOfNote(note)
+
+					})
+
 				} else {
 					this.localListItem = []
 					this.totalNotesNumber = 0
@@ -219,6 +225,13 @@ export default {
 				this.loading = false
 			})
 		},
+		async addShareInfoOfNote(note) {
+			if (!note.userId || !note.shareInfo) {
+				return Promise.resolve(note)
+			}
+			return await Modules.addShareInfoNote(this.user.id, note, this.user.groups)
+		},
+
 		striptag(html) {
 			if (html) {
 				const str = html.replace(/<("[^"]*"|'[^']*'|[^'">])*>|\s|&nbsp;/g, '')

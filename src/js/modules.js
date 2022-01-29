@@ -345,117 +345,141 @@ export default {
 		return { fileInfo, dirInfo }
 	},
 	// TODO
-	fetchNotes(user, propFilter) {
+	async fetchNotes(user, propFilter) {
 		const defFilter = { category: 0, offset: 0, limit: 0, pubFlag: 1, pinFlag: 0, tags: 'all', unread: 0 }
 		const filter = { ...defFilter, ...propFilter }
 		const userId = user.id
-		 const userGroups = user.groups
-		return axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter }).then((result) => {
-			return result.data
+		 // const userGroups = user.groups
+
+		const total = await this.countTotalNote(filter)
+
+		if (!total) {
+			return { total, data: [] }
+		}
+
+		const data = await this.fetchFilteredNotes(filter)
+		console.info(data)
+		const addedData = data.map((note) => {
+			if (note.readusers) {
+				const readusersArray = note.readusers.split(',')
+				note.isRead = readusersArray.includes(userId)
+
+			} else {
+				note.readusers = ''
+				note.isRead = false
+			}
+			return note
+
+		})
+		console.info(addedData)
+
+		const result = addedData.filter((el) => el.id)
+		console.info(result)
+		return { total, data: result }
+
+	},
+	async addShareInfoNote(userId, note, userGroups) {
+		if (!note.userId || !note.shareInfo) {
+			return note
+		}
+
+		const shareInfos = JSON.parse(note.shareInfo)
+		const shareId = shareInfos.filter(
+			(shareInfo) => {
+				return (userGroups.includes(shareInfo.gid) || note.userId === userId)
+			}
+		).map((share) => share.shareId)[0]
+		let userDirP
+		if (!shareId) {
+			if (note.userId !== userId) {
+				return {}
+			}
+			note.pubFlag = 0
+			userDirP = Promise.resolve(`.announce_${note.uuid}`)
+		} else {
+			userDirP = this.fetchShareInfo(shareId)
+		}
+		const userInfoP = this.autherInfo(note.userId)
+		const allGroupsP = axios.get(generateUrl('/apps/welcomapp/getallgroups')).then((result) => {
+			if (result && result.data) {
+				return result.data.filter((group) => group.gid !== 'admin')
+			} else {
+				return []
+			}
+		})
+
+		return await this.promiseAllThenReturnNote(note, userId, userInfoP, userDirP, allGroupsP, shareInfos)
+	},
+	async fetchFilteredNotes(filter) {
+
+		return axios.get(generateUrl('/apps/welcomapp/filter'), {
+			params: filter,
+		}).then((result) => {
+			const data = result.data
+			console.info(result)
+
+			if (!data || !data.length) {
+				return []
+			}
+			return data
 		}).catch((e) => {
 			showError(t('welcomapp', 'Could not fetch notes'))
-			return Promise.resolve(0)
-		}).then((total) => {
-			if (!total) {
-				return { total, data: [] }
-			}
+			return []
+		})
+	},
 
-		 return axios.get(generateUrl('/apps/welcomapp/filter'), {
-				params: filter,
-			// paramsSerializer: () => {
-			// return transformRequestOptions(filter)
-			// },
-			}).then((result) => {
-				const data = result.data
-				if (!data || !data.length) {
-					return Promise.resolve([])
-
-				}
-				const addedData = data.map((note) => {
-					if (note.readusers) {
-						const readusersArray = note.readusers.split(',')
-						note.isRead = readusersArray.includes(user.id)
-
-					} else {
-						note.readusers = ''
-						note.isRead = false
-					}
-					if (note.userId && note.shareInfo) {
-						const shareInfos = JSON.parse(note.shareInfo)
-						const shareId = shareInfos.filter(
-							 (shareInfo) => {
-							  return (userGroups.includes(shareInfo.gid) || note.userId === user.id)
-
-							 }
-
-						).map((share) => share.shareId)[0]
-						let userDirP
-						if (!shareId) {
-							if (note.userId !== user.id) {
-								return {}
-							}
-							note.pubFlag = 0
-							userDirP = Promise.resolve(`.announce_${note.uuid}`)
-						} else {
-							userDirP = this.fetchShareInfo(shareId)
-
-						}
-						const userInfoP = this.autherInfo(note.userId)
-						const allGroupsP = axios.get(generateUrl('/apps/welcomapp/getallgroups')).then((result) => {
-							if (result && result.data) {
-
-								return result.data.filter((group) => group.gid !== 'admin')
-							} else {
-								return []
-							}
-						})
-
-						return Promise.all([userInfoP, userDirP, allGroupsP]).then(([userInfo, userDir, allGroups]) => {
-							note.userInfo = userInfo
-							note.userDir = userDir
-							if (shareInfos) {
-								note.shareGroups = shareInfos.map((share) => allGroups.find((group) => group.id === share.gid))
-							}
-							if (note.content && note.userId !== userId) {
-							// TODO
-
-								 const targetStr = note.content
-								 const beforeStr = `/${note.userId}/.announce_${note.uuid}`
-								 const afterStr = `/${userId}${userDir}`
-								 const reg = new RegExp(beforeStr, 'g')
-								 note.content = targetStr.replace(reg, afterStr)
-							}
-							if (userId && userDir && note.uuid) {
-								const path = `${userId}${userDir}`
-								const dirInfo = this.fetchDirInfo(path)
-								const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
-								return Promise.all([fileInfo, dirInfo]).then((array) => {
-									note.baseFileId = array[1][0].fileId
-									const checked = this.compareFileInfo(array)
-									note.fileInfo = checked.fileInfo
-									note.dirInfo = checked.dirInfo
-									return note
-								})
-							} else {
-								return Promise.resolve(note)
-							}
-						})
-					} else {
-						return Promise.resolve(note)
-					}
-
-				})
-
-				return Promise.all(addedData).then((data) => {
-					data = data.filter((el) => el.id)
-					return { total, data }
-
-				})
+	async countTotalNote(filter) {
+		return await axios.get(generateUrl('/apps/welcomapp/filtercount'), { params: filter })
+			.then((result) => {
+				return result.data
 			}).catch((e) => {
 				showError(t('welcomapp', 'Could not fetch notes'))
-				return Promise.resolve([])
+				return Promise.resolve(0)
 			})
-		})
+	},
+
+	async promiseAllThenReturnNote(note, userId, userInfoP, userDirP, allGroupsP, shareInfos) {
+
+		return Promise.all([userInfoP, userDirP, allGroupsP]).then(
+			async ([userInfo, userDir, allGroups]) => {
+				note.userInfo = userInfo
+				note.userDir = userDir
+				if (shareInfos) {
+					note.shareGroups = shareInfos.map((share) => allGroups.find((group) => group.id === share.gid))
+				}
+				note = this.replaceContent(note, userId, userDir)
+
+				return await this.returnNoteWithCheckedFileInfo(note, userId, userDir)
+			})
+	},
+	replaceContent(note, userId, userDir) {
+		console.info('replace content')
+		if (note.content && note.userId !== userId) {
+			// TODO
+
+			const targetStr = note.content
+			const beforeStr = `/${note.userId}/.announce_${note.uuid}`
+			const afterStr = `/${userId}${userDir}`
+			const reg = new RegExp(beforeStr, 'g')
+			note.content = targetStr.replace(reg, afterStr)
+		}
+		return note
+	},
+	async returnNoteWithCheckedFileInfo(note, userId, userDir) {
+		if (userId && userDir && note.uuid) {
+			const path = `${userId}${userDir}`
+			const dirInfo = this.fetchDirInfo(path)
+			const fileInfo = this.fetchFileInfo(note.uuid, userId, userDir)
+			return Promise.all([fileInfo, dirInfo]).then((array) => {
+				note.baseFileId = array[1][0].fileId
+				const checked = this.compareFileInfo(array)
+				note.fileInfo = checked.fileInfo
+				note.dirInfo = checked.dirInfo
+				return note
+			})
+		} else {
+			return Promise.resolve(note)
+		}
 
 	},
 	checkDir(path) {

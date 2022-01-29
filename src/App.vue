@@ -176,9 +176,9 @@ export default {
 	 */
 	async created() {
 		// this.fetchNotes()
-		this.fetchUserData()
-		this.fetchCategories()
-		this.fetchTags()
+		await this.fetchUserData()
+		await this.fetchCategories()
+		await this.fetchTags()
 
 		axios.get(generateUrl('/apps/welcomapp/getallusers')).then((result) => {
 			this.allUsers = result.data
@@ -203,6 +203,7 @@ export default {
 		},
 		async fetchNotes() {
 			await axios.get(generateUrl('/apps/welcomapp/notes')).then((result) => {
+				console.info(result)
 				this.notes = result.data
 			}).catch((e) => {
 				console.error(e)
