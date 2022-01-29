@@ -149,7 +149,7 @@ export default {
 			user: {},
 			containerMode: 'list',
 			testData: null,
-			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 0, tags: 'all', unread: 0 },
+			filter: { category: 0, pubFlag: 1, pinFlag: 0, offset: 0, limit: 10, tags: 'all', unread: 0 },
 			headerConfig: {},
 			allUsers: [],
 			allGroups: [],
