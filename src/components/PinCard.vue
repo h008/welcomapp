@@ -63,14 +63,14 @@ export default {
 			type: Array,
 			default: () => { return [] },
 		},
-		updated:{
-			type:Array,
-			default: () => { return []}
+		updated: {
+			type: Array,
+			default: () => { return [] },
 		},
-		index:{
-			type:number,
-			default:0
-		}
+		index: {
+			type: Number,
+			default: 0,
+		},
 	},
 	data() {
 		return {
@@ -93,7 +93,7 @@ export default {
 			return category
 		},
 		eyecatchUrl() {
-			if(this.updated.length > this.index + 1) {
+			if (this.updated.length > this.index + 1) {
 
 				if (!this.note.fileInfo || !this.note.fileInfo.length) {
 					return ''
@@ -109,7 +109,7 @@ export default {
 					return ''
 				}
 				return fileInfo.userRef || ''
-			}else{
+			} else {
 				return ''
 			}
 		},

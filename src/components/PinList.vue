@@ -2,14 +2,14 @@
 	<div>
 		<Loader v-if="loading" />
 		<div v-else-if="localList && localList.length" class="d-block">
-			<div class="card__wrapper" >
+			<div class="card__wrapper">
 				<PinCard v-for="(item, index) in localList"
 					:key="`pc__${item.id}`"
 					:categories="categories"
 					:tags="tags"
 					:note="item"
-						 :updated="cardInfo"
-						 :index="index"
+					:updated="cardInfo"
+					:index="index"
 					@click="showDetail(item)" />
 			</div>
 		</div>
@@ -66,7 +66,7 @@ export default {
 			offset: 0,
 			limit: 0,
 			loading: false,
-			cardInfo:[]
+			cardInfo: [],
 		}
 	},
 	computed: {
@@ -97,10 +97,10 @@ export default {
 				this.localList = localList
 				this.itemNumber = data.total
 				this.loading = false
-				 this.cardInfo=[]
+				 this.cardInfo = []
 				 localList.forEach(async (note, index) => {
 
-					 this.localList[index] = await this.addShareInfoOfNote(note).then((note)=>{
+					 this.localList[index] = await this.addShareInfoOfNote(note).then((note) => {
 						 this.cardInfo.push('update')
 						 return note
 					 })
