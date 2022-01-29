@@ -63,6 +63,14 @@ export default {
 			type: Array,
 			default: () => { return [] },
 		},
+		updated:{
+			type:Array,
+			default: () => { return []}
+		},
+		index:{
+			type:number,
+			default:0
+		}
 	},
 	data() {
 		return {
@@ -85,14 +93,25 @@ export default {
 			return category
 		},
 		eyecatchUrl() {
-			if (!this.note.fileInfo || !this.note.fileInfo.length) {
+			if(this.updated.length > this.index + 1) {
+
+				if (!this.note.fileInfo || !this.note.fileInfo.length) {
+					return ''
+				}
+				const fileInfo = this.note.fileInfo.find((item) => {
+					if (!item.is_eyecatch || (item.is_eyecatch && (item.is_eyecatch === 0 || item.is_eyecatch === '0' || item.is_eyecatch === 'false' || item.is_eyecatch === ''))) {
+						return false
+					} else {
+						return true
+					}
+				})
+				if (!fileInfo) {
+					return ''
+				}
+				return fileInfo.userRef || ''
+			}else{
 				return ''
 			}
-			const fileInfo = this.note.fileInfo.find((item) => {
-				if (!item.is_eyecatch || (item.is_eyecatch && (item.is_eyecatch === 0 || item.is_eyecatch === '0' || item.is_eyecatch === 'false' || item.is_eyecatch === ''))) { return false } else { return true }
-			})
-			if (!fileInfo) { return '' }
-			return fileInfo.userRef || ''
 		},
 		hasFiles() {
 			if (!this.note.fileInfo || !this.note.fileInfo.length) {
