@@ -447,7 +447,7 @@ export default {
 				if (shareInfos) {
 					note.shareGroups = shareInfos.map((share) => allGroups.find((group) => group.id === share.gid))
 				}
-				note = this.replaceContent(note, userId, userDir)
+				// note = this.replaceContent(note, userId, userDir)
 
 				return await this.returnNoteWithCheckedFileInfo(note, userId, userDir)
 			})
@@ -455,6 +455,8 @@ export default {
 	replaceContent(note, userId, userDir) {
 		console.info('replace content')
 		if (note.content && note.userId !== userId) {
+			console.info(note.userId)
+			console.info(userId)
 			// TODO
 
 			const targetStr = note.content

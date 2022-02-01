@@ -24,7 +24,7 @@
 				<div>投稿:{{ note.userInfo.displayname }}</div>
 			</div>
 			<div v-if="note.content" class="detail__text">
-				<SanitizedContent :content="note.content" />
+				<SanitizedContent :content="note.content" :author="note.userId" :uid="user.id" />
 			</div>
 			<FileList v-if="note.fileInfo && note.fileInfo.length" :file-info="note.fileInfo" />
 			<ReadUsers :read-users.sync="readUsers"
